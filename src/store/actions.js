@@ -11,4 +11,7 @@ export default {
   setDailyForecast({commit}, dailyForecastData) {
     commit("SET_DAILY_FORECAST", dailyForecastData);
   },
+  setCurrentWeather({commit}, currentWeatherData) {
+    commit("SET_CURRENT_WEATHER", currentWeatherData);
+  }
 };

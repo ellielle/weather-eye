@@ -3,6 +3,7 @@ import {
   SET_WEATHER_DATA,
   SET_DAILY_FORECAST,
   SET_WEEKLY_FORECAST,
+  SET_CURRENT_WEATHER
 } from "./mutation-types";
 
 export default {
@@ -17,8 +18,9 @@ export default {
     state.weeklyForecast = weeklyForecastData;
   },
   [SET_DAILY_FORECAST](state, dailyForecastData) {
-    // Type determines how API returns data.
-    // Data contains forecast object, description string, wind speed, and geo coord object
     state.dailyForecast = dailyForecastData;
   },
+  [SET_CURRENT_WEATHER](state, currentWeatherData) {
+    state.currentWeather = currentWeatherData;
+  }
 };
