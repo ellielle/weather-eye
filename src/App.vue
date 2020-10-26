@@ -1,5 +1,5 @@
 <template>
-  <div id="nav">
+  <div id="app">
     <app-home></app-home>
   </div>
 </template>
@@ -18,7 +18,7 @@ body {
   margin: 0;
 }
 
-#nav {
+#app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

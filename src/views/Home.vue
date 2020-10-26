@@ -19,8 +19,8 @@
       <button @click="testWeathertest">TEST WEATHER BUTTON</button>
       <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
     </div>
-    <!-- <current-weather :current-weather="currentWeatherData" v-if="errorMessage"></current-weather> -->
-    <!-- <weather-forecast></weather-forecast> -->
+    <current-weather></current-weather>
+    <weekly-forecast></weekly-forecast>
 
     <!--    <ul class="weather" v-if="weatherChecked">-->
     <!--      <li v-for="data in weatherData">-->
@@ -31,19 +31,22 @@
 </template>
 
 <script>
-import CurrentWeather from "./CurrentWeather";
-import WeatherForecast from "./WeatherForecast";
+import CurrentWeather from "../components/CurrentWeather";
+import WeeklyForecast from "../components/WeeklyForecast";
+import DailyForecast from "../components/DailyForecast";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Home",
 
   components: {
     CurrentWeather,
-    WeatherForecast
+    WeeklyForecast,
+    DailyForecast
   },
 
   // TODO unit toggle
   // TODO refresh weather button
+  // TODO throw up error message if query comes back invalid
 
   // !
   data() {
@@ -51,6 +54,7 @@ export default {
       userInput: "",
       geoDataAvailable: false,
       errorMessage: "",
+      searchType: "",
     };
   },
 
@@ -62,17 +66,26 @@ export default {
       "getWeatherData",
       "getUserOptions",
       "getCurrentWeatherData",
+      "getDailyForecastData",
     ]),
-    currentWeatherData() {
-      
-    },
+    currentWeatherData() {},
     isUserLocationSet() {
-      return this.getUserCoordinates.lat !== null && this.getUserCoordinates.lon !== null;
+      return (
+        this.getUserCoordinates.lat !== null &&
+        this.getUserCoordinates.lon !== null
+      );
+    },
+  },
+
+  watch: {
+    getWeatherData() {
+      // TODO watching for changes in gotten data, trigger parsing of data here
+      this.parseWeatherData();
     },
   },
 
   methods: {
-    ...mapActions(["setUserCoordinates", "setWeatherData"]),
+    ...mapActions(["setUserCoordinates", "setWeatherData", "setDailyForecast"]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
       let fullAPIURL = ``;
@@ -80,10 +93,11 @@ export default {
       if (args.type === "coords") {
         fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}`;
       } else if (args.type === "zip") {
-        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?zip=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}`;
+        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?zip=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
       } else if (args.type === "city&state") {
-        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?q=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}`;
+        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?q=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
       }
+      this.searchType = args.type;
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
@@ -95,7 +109,8 @@ export default {
       }
 
       // !remove
-      console.log("WD", this.getWeatherData);
+      console.log(this.getWeatherData);
+      this.searchType = "";
     },
 
     getGeoLocationData() {
@@ -145,7 +160,44 @@ export default {
       }
     },
 
-    parseWeatherData() {},
+    parseWeatherData() {
+      this.parseDailyForecast();
+      this.parseCurrentWeatherComponentData();
+    },
+
+    parseCurrentWeatherComponentData() {
+      // This method formats data for CurrentWeather component regardless of origin API call
+    },
+
+    parseDailyForecast() {
+      if (this.searchType === "coords") {
+        this.setDailyForecast({
+          type: "coords",
+          data: {
+            forecast: this.getWeatherData.daily[0],
+            coords: {
+              lat: this.getWeatherData.lat,
+              lon: this.getWeatherData.lon,
+            },
+            description: this.getWeatherData.daily[0].weather[0].description,
+            wind: this.getWeatherData.current.wind_speed
+          },
+        });
+      } else if (
+        this.searchType === "zip" ||
+        this.searchType === "city&state"
+      ) {
+        this.setDailyForecast({
+          type: "normal",
+          data: {
+            forecast: this.getWeatherData.main,
+            coords: this.getWeatherData.coord,
+            description: this.getWeatherData.weather[0].description,
+            wind: this.getWeatherData.wind.speed
+          },
+        });
+      }
+    },
 
     saveUserLocation() {
       // TODO save user coords if they want to save the location as their main
@@ -168,7 +220,7 @@ export default {
 
     // !remove
     testWeathertest() {
-      console.log(this.getWeatherData);
+      this.getWeatherDataFromAPI();
     },
   },
 
