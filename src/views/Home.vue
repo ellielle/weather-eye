@@ -22,7 +22,16 @@
     <current-weather v-if="currentWeatherAvailable"></current-weather>
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
     <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
-
+    <div class="btn-unit-change">
+      <span class="btn-unit btn-metric" @click="changeUnits($event, 'metric')"
+        >Metric: °C, m/s</span
+      >
+      <span
+        class="btn-unit btn-imperial"
+        @click="changeUnits($event, 'imperial')"
+        >Imperial: °F, mph</span
+      >
+    </div>
     <!--    <ul class="weather" v-if="weatherChecked">-->
     <!--      <li v-for="data in weatherData">-->
 
@@ -45,6 +54,7 @@ export default {
     DailyForecast,
   },
 
+  // TODO use parsed data and build out components now
   // TODO unit toggle
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
@@ -89,7 +99,6 @@ export default {
 
   watch: {
     getWeatherData() {
-      // TODO watching for changes in gotten data, trigger parsing of data here
       this.parseWeatherData();
     },
   },
@@ -101,6 +110,7 @@ export default {
       "setDailyForecast",
       "setCurrentWeather",
       "setWeeklyForecast",
+      "setUserOptions",
     ]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
@@ -241,7 +251,7 @@ export default {
             temp_low: forecast.temp.min,
             humidity: forecast.humidity,
             description: forecast.weather[0].description,
-            wind: forecast.wind_speed
+            wind: forecast.wind_speed,
           });
         });
       }
@@ -269,6 +279,24 @@ export default {
       }
     },
 
+    changeUnits(args, newUnit) {
+      let unitChanged = false;
+      if (newUnit === "metric" && this.getUserOptions.units === "imperial") {
+        // TODO add .selected class and remove .selected if it exists
+        // TODO maybe querySelectorAll ?
+        unitChanged = true;
+      } else if (
+        newUnit === "imperial" &&
+        this.getUserOptions.units === "metric"
+      ) {
+        // TODO add .selected class and remove .selected if it exists
+        unitChanged = true;
+      }
+      if (unitChanged) {
+        this.setUserOptions({ units: newUnit });
+      }
+    },
+
     // !remove
     testWeathertest() {
       this.getWeatherDataFromAPI();
@@ -276,6 +304,9 @@ export default {
   },
 
   created() {
+    // TODO on created, get unit and add .selected class to correct 'button'
+    // TODO add @click events on both spans
+
     if (!this.isLocationSavedInStorage()) {
       if (!this.getGeoLocationData()) {
         this.geoDataAvailable = false;
@@ -346,5 +377,28 @@ input[type="text"] {
     opacity: 1;
     right: 0;
   }
+}
+
+.btn-unit-change {
+  border: solid 1px white;
+  border-radius: 10px;
+  width: fit-content;
+  padding: 5px;
+  background-color: var(--sub-background);
+  .selected {
+    background-color: var(--main-background);
+  }
+}
+
+.btn-unit {
+  padding: 0 5px;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.btn-metric {
+  padding: 5px;
+  border-right: solid 1px white;
 }
 </style>
