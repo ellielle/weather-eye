@@ -3,7 +3,8 @@ import {
   SET_WEATHER_DATA,
   SET_DAILY_FORECAST,
   SET_WEEKLY_FORECAST,
-  SET_CURRENT_WEATHER
+  SET_CURRENT_WEATHER,
+  SET_USER_OPTIONS
 } from "./mutation-types";
 
 export default {
@@ -22,5 +23,8 @@ export default {
   },
   [SET_CURRENT_WEATHER](state, currentWeatherData) {
     state.currentWeather = currentWeatherData;
+  },
+  [SET_USER_OPTIONS](state, userOptions) {
+    state.userOptions = userOptions;
   }
 };

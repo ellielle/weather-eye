@@ -13,5 +13,8 @@ export default {
   },
   setCurrentWeather({commit}, currentWeatherData) {
     commit("SET_CURRENT_WEATHER", currentWeatherData);
+  },
+  setUserOptions({commit}, userOptions) {
+    commit("SET_USER_OPTIONS", userOptions);
   }
 };
