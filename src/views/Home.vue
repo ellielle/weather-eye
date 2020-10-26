@@ -19,8 +19,9 @@
       <button @click="testWeathertest">TEST WEATHER BUTTON</button>
       <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
     </div>
-    <current-weather></current-weather>
-    <weekly-forecast></weekly-forecast>
+    <current-weather v-if="currentWeatherAvailable"></current-weather>
+    <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
+    <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
 
     <!--    <ul class="weather" v-if="weatherChecked">-->
     <!--      <li v-for="data in weatherData">-->
@@ -31,9 +32,9 @@
 </template>
 
 <script>
-import CurrentWeather from "../components/CurrentWeather";
-import WeeklyForecast from "../components/WeeklyForecast";
-import DailyForecast from "../components/DailyForecast";
+import CurrentWeather from "./CurrentWeather";
+import WeeklyForecast from "./WeeklyForecast";
+import DailyForecast from "./DailyForecast";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Home",
@@ -41,7 +42,7 @@ export default {
   components: {
     CurrentWeather,
     WeeklyForecast,
-    DailyForecast
+    DailyForecast,
   },
 
   // TODO unit toggle
@@ -67,8 +68,17 @@ export default {
       "getUserOptions",
       "getCurrentWeatherData",
       "getDailyForecastData",
+      "getWeeklyForecastData",
     ]),
-    currentWeatherData() {},
+    currentWeatherAvailable() {
+      return Object.keys(this.getCurrentWeatherData).length > 0;
+    },
+    dailyForecastAvailable() {
+      return Object.keys(this.getDailyForecastData).length > 0;
+    },
+    weeklyForecastAvailable() {
+      return Object.keys(this.getWeeklyForecastData).length > 0;
+    },
     isUserLocationSet() {
       return (
         this.getUserCoordinates.lat !== null &&
@@ -85,13 +95,19 @@ export default {
   },
 
   methods: {
-    ...mapActions(["setUserCoordinates", "setWeatherData", "setDailyForecast"]),
+    ...mapActions([
+      "setUserCoordinates",
+      "setWeatherData",
+      "setDailyForecast",
+      "setCurrentWeather",
+      "setWeeklyForecast",
+    ]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
       let fullAPIURL = ``;
       // ! args is a reminder to build this method to work for both lat/lon and city / zip search
       if (args.type === "coords") {
-        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}`;
+        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
       } else if (args.type === "zip") {
         fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?zip=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
       } else if (args.type === "city&state") {
@@ -162,42 +178,60 @@ export default {
 
     parseWeatherData() {
       this.parseDailyForecast();
-      this.parseCurrentWeatherComponentData();
+      this.parseCurrentWeather();
     },
 
-    parseCurrentWeatherComponentData() {
+    parseCurrentWeather() {
       // This method formats data for CurrentWeather component regardless of origin API call
+      if (this.searchType === "coords") {
+        this.setCurrentWeather({
+          temp: this.getWeatherData.current.temp,
+          humidity: this.getWeatherData.current.humidity,
+          feels_like: this.getWeatherData.current.feels_like,
+          description: this.getWeatherData.current.weather[0].description,
+          wind: this.getWeatherData.current.wind_speed,
+        });
+      } else if (
+        this.searchType === "zip" ||
+        this.searchType === "city&state"
+      ) {
+        this.setCurrentWeather({
+          temp: this.getWeatherData.main.temp,
+          humidity: this.getWeatherData.main.humidity,
+          feels_like: this.getWeatherData.main.feels_like,
+          description: this.getWeatherData.weather[0].description,
+          wind: this.getWeatherData.wind.speed,
+        });
+      }
     },
 
     parseDailyForecast() {
       if (this.searchType === "coords") {
         this.setDailyForecast({
-          type: "coords",
-          data: {
-            forecast: this.getWeatherData.daily[0],
-            coords: {
-              lat: this.getWeatherData.lat,
-              lon: this.getWeatherData.lon,
-            },
-            description: this.getWeatherData.daily[0].weather[0].description,
-            wind: this.getWeatherData.current.wind_speed
+          temp_high: this.getWeatherData.daily[0].temp.max,
+          temp_low: this.getWeatherData.daily[0].temp.min,
+          coords: {
+            lat: this.getWeatherData.lat,
+            lon: this.getWeatherData.lon,
           },
+          description: this.getWeatherData.daily[0].weather[0].description,
+          wind: this.getWeatherData.daily[0].wind_speed,
         });
       } else if (
         this.searchType === "zip" ||
         this.searchType === "city&state"
       ) {
         this.setDailyForecast({
-          type: "normal",
-          data: {
-            forecast: this.getWeatherData.main,
-            coords: this.getWeatherData.coord,
-            description: this.getWeatherData.weather[0].description,
-            wind: this.getWeatherData.wind.speed
-          },
+          temp_high: this.getWeatherData.main.temp_max,
+          temp_low: this.getWeatherData.main.temp_min,
+          coords: this.getWeatherData.coord,
+          description: this.getWeatherData.weather[0].description,
+          wind: this.getWeatherData.wind.speed,
         });
       }
     },
+
+    parseWeeklyForecast() {},
 
     saveUserLocation() {
       // TODO save user coords if they want to save the location as their main

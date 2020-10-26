@@ -1,5 +1,5 @@
 <template>
-  
+  <h2>WEEKLY FORECAST</h2>
 </template>
 <script>
 export default {
