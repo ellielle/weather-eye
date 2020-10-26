@@ -179,6 +179,7 @@ export default {
     parseWeatherData() {
       this.parseDailyForecast();
       this.parseCurrentWeather();
+      this.parseWeeklyForecast();
     },
 
     parseCurrentWeather() {
@@ -231,7 +232,23 @@ export default {
       }
     },
 
-    parseWeeklyForecast() {},
+    parseWeeklyForecast() {
+      const weeklyForecast = [];
+      if (this.searchType === "coords") {
+        this.getWeatherData.daily.forEach((forecast) => {
+          weeklyForecast.push({
+            temp_high: forecast.temp.max,
+            temp_low: forecast.temp.min,
+            humidity: forecast.humidity,
+            description: forecast.weather[0].description,
+            wind: forecast.wind_speed
+          });
+        });
+      }
+      if (weeklyForecast.length > 0) {
+        this.setWeeklyForecast(weeklyForecast);
+      }
+    },
 
     saveUserLocation() {
       // TODO save user coords if they want to save the location as their main
