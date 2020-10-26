@@ -22,5 +22,5 @@ export default {
   },
   getUserOptions(state) {
     return state.userOptions;
-  }
+  },
 };
