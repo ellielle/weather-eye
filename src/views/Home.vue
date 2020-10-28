@@ -101,6 +101,12 @@ export default {
     getWeatherData() {
       this.parseWeatherData();
     },
+    getUserOptions() {
+
+      // ! in case you forget, userOptions is now reactive again! :)
+      // ? this watch is here for the slider to update / init properly
+      console.log("user options changed");
+    }
   },
 
   methods: {
