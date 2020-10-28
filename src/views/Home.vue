@@ -19,15 +19,9 @@
       <button @click="testWeathertest">TEST WEATHER BUTTON</button>
       <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
     </div>
-    <current-weather v-if="currentWeatherAvailable"></current-weather>
+    <current-weather v-if="currentWeatherAvailable" :current-weather="getCurrentWeatherData"></current-weather>
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
     <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
-    <!-- <div class="btn-unit-change btn-metric">
-      Metric: °C, m/s
-    </div>
-    <div class="btn-unit-change btn-imperial">
-      Imperial: °F, mph
-    </div> -->
     <div class="btn-unit-change">
       <span class="btn-unit btn-metric" @click="changeUnits('metric')"
         >Metric: °C, m/s</span
@@ -36,11 +30,6 @@
         >Imperial: °F, mph</span
       >
     </div>
-    <!--    <ul class="weather" v-if="weatherChecked">-->
-    <!--      <li v-for="data in weatherData">-->
-
-    <!--      </li>-->
-    <!--    </ul>-->
   </div>
 </template>
 
@@ -59,13 +48,12 @@ export default {
   },
 
   // TODO use parsed data and build out components now
-  // TODO unit toggle
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
   // TODO store previous URL + interpolated values into previousQuery object in store
   // TODO run previousQuery when units are changed to update data
+  // TODO animations / transitions
 
-  // !
   data() {
     return {
       userInput: "",
@@ -154,7 +142,7 @@ export default {
           fullAPIURL = args.data;
           break;
       }
-      this.searchType = args.type;
+      this.searchType = args.type !== "url" ? args.type : this.getPreviousSearchType();
       this.setPreviousQuery(fullAPIURL);
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
@@ -220,9 +208,27 @@ export default {
     },
 
     parseWeatherData() {
+      if (this.searchType === "url") {
+        this.getPreviousSearchType();
+      }
       this.parseDailyForecast();
       this.parseCurrentWeather();
       this.parseWeeklyForecast();
+    },
+
+    getPreviousSearchType() {
+      const previousQuery = this.getPreviousQuery;
+      console.log(this.getPreviousQuery);
+      if (previousQuery.match(/onecall?/)) {
+        console.log("onecall");
+        return "coords";
+      }
+      else if (previousQuery.match(/weather?zip/)) {
+        return "zip";
+      }
+      else if (previousQuery.match(/weather?q/)) {
+        return "city&state";
+      }
     },
 
     parseCurrentWeather() {
