@@ -1,19 +1,2 @@
-# weather-eye
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# Weather Eye
+This is an implementation of the weather app project from [The Odin Project](https://www.theodinproject.com/courses/javascript/lessons/weather-app). 
