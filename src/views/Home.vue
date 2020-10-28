@@ -22,6 +22,12 @@
     <current-weather v-if="currentWeatherAvailable"></current-weather>
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
     <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
+    <!-- <div class="btn-unit-change btn-metric">
+      Metric: °C, m/s
+    </div>
+    <div class="btn-unit-change btn-imperial">
+      Imperial: °F, mph
+    </div> -->
     <div class="btn-unit-change">
       <span class="btn-unit btn-metric" @click="changeUnits('metric')"
         >Metric: °C, m/s</span
@@ -56,6 +62,8 @@ export default {
   // TODO unit toggle
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
+  // TODO store previous URL + interpolated values into previousQuery object in store
+  // TODO run previousQuery when units are changed to update data
 
   // !
   data() {
@@ -77,6 +85,7 @@ export default {
       "getCurrentWeatherData",
       "getDailyForecastData",
       "getWeeklyForecastData",
+      "getPreviousQuery",
     ]),
     currentWeatherAvailable() {
       return Object.keys(this.getCurrentWeatherData).length > 0;
@@ -109,11 +118,11 @@ export default {
       "setCurrentWeather",
       "setWeeklyForecast",
       "setUserOptions",
+      "setPreviousQuery",
     ]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
       let fullAPIURL = ``;
-      // ! args is a reminder to build this method to work for both lat/lon and city / zip search
       if (args.type === "coords") {
         fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
       } else if (args.type === "zip") {
@@ -417,6 +426,16 @@ input[type="text"] {
 
 .btn-metric {
   padding: 5px;
+  margin-left: -5px;
   border-right: solid 1px white;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.btn-imperial {
+  padding: 5px;
+  margin-right: -5px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 </style>
