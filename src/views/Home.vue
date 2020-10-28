@@ -23,12 +23,10 @@
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
     <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
     <div class="btn-unit-change">
-      <span class="btn-unit btn-metric" @click="changeUnits($event, 'metric')"
+      <span class="btn-unit btn-metric" @click="changeUnits('metric')"
         >Metric: °C, m/s</span
       >
-      <span
-        class="btn-unit btn-imperial"
-        @click="changeUnits($event, 'imperial')"
+      <span class="btn-unit btn-imperial" @click="changeUnits('imperial')"
         >Imperial: °F, mph</span
       >
     </div>
@@ -101,12 +99,6 @@ export default {
     getWeatherData() {
       this.parseWeatherData();
     },
-    getUserOptions() {
-
-      // ! in case you forget, userOptions is now reactive again! :)
-      // ? this watch is here for the slider to update / init properly
-      console.log("user options changed");
-    }
   },
 
   methods: {
@@ -285,22 +277,50 @@ export default {
       }
     },
 
-    changeUnits(args, newUnit) {
+    changeUnits(newUnit) {
       let unitChanged = false;
+      const metricButton = document.querySelector(".btn-metric");
+      const imperialButton = document.querySelector(".btn-imperial");
       if (newUnit === "metric" && this.getUserOptions.units === "imperial") {
-        // TODO add .selected class and remove .selected if it exists
-        // TODO maybe querySelectorAll ?
+        if (imperialButton.classList.contains("selected")) {
+          imperialButton.classList.remove("selected");
+        }
+        metricButton.classList.add("selected");
         unitChanged = true;
       } else if (
         newUnit === "imperial" &&
         this.getUserOptions.units === "metric"
       ) {
-        // TODO add .selected class and remove .selected if it exists
+        if (metricButton.classList.contains("selected")) {
+          metricButton.classList.remove("selected");
+        }
+        imperialButton.classList.add("selected");
         unitChanged = true;
       }
       if (unitChanged) {
         this.setUserOptions({ units: newUnit });
+        localStorage.setItem("units", newUnit);
       }
+    },
+
+    getStoredUserOptions() {
+      if (!this.isLocationSavedInStorage()) {
+        if (!this.getGeoLocationData()) {
+          this.geoDataAvailable = false;
+        }
+      } else {
+        const coordinates = JSON.parse(localStorage.getItem("coords"));
+        this.setUserCoordinates({ lat: coordinates.lat, lon: coordinates.lon });
+        this.geoDataAvailable = true;
+      }
+      if (!localStorage.getItem("units")) {
+        localStorage.setItem("units", "imperial");
+      }
+    },
+
+    setSelectedOption(userUnits) {
+      const selectedButton = document.querySelector(`.btn-${userUnits}`);
+      selectedButton.classList.add("selected");
     },
 
     // !remove
@@ -310,21 +330,10 @@ export default {
   },
 
   created() {
-    // TODO on created, get unit and add .selected class to correct 'button'
-    // TODO add @click events on both spans
-
-    if (!this.isLocationSavedInStorage()) {
-      if (!this.getGeoLocationData()) {
-        this.geoDataAvailable = false;
-      }
-    } else {
-      const coordinates = JSON.parse(localStorage.getItem("coords"));
-      this.setUserCoordinates({ lat: coordinates.lat, lon: coordinates.lon });
-      this.geoDataAvailable = true;
-    }
-    if (!localStorage.getItem("units")) {
-      localStorage.setItem("units", "imperial");
-    }
+    this.getStoredUserOptions();
+  },
+  mounted() {
+    this.setSelectedOption(this.getUserOptions.units);
   },
 };
 </script>
@@ -400,6 +409,9 @@ input[type="text"] {
   padding: 0 5px;
   &:hover {
     cursor: pointer;
+  }
+  .selected {
+    background-color: white;
   }
 }
 
