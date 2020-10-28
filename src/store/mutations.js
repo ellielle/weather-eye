@@ -4,7 +4,8 @@ import {
   SET_DAILY_FORECAST,
   SET_WEEKLY_FORECAST,
   SET_CURRENT_WEATHER,
-  SET_USER_OPTIONS
+  SET_USER_OPTIONS,
+  SET_PREVIOUS_QUERY,
 } from "./mutation-types";
 
 export default {
@@ -26,5 +27,8 @@ export default {
   },
   [SET_USER_OPTIONS](state, userOptions) {
     state.userOptions = userOptions;
+  },
+  [SET_PREVIOUS_QUERY](state, previousQuery) {
+    state.previousQuery = previousQuery;
   }
 };

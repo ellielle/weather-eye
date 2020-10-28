@@ -23,4 +23,7 @@ export default {
   getUserOptions(state) {
     return state.userOptions;
   },
+  getPreviousQuery(state) {
+    return state.previousQuery;
+  }
 };
