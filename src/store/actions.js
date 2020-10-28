@@ -16,5 +16,8 @@ export default {
   },
   setUserOptions({commit}, userOptions) {
     commit("SET_USER_OPTIONS", userOptions);
+  },
+  setPreviousQuery({commit}, previousQuery) {
+    commit("SET_PREVIOUS_QUERY", previousQuery);
   }
 };

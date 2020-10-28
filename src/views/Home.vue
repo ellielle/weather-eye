@@ -108,6 +108,22 @@ export default {
     getWeatherData() {
       this.parseWeatherData();
     },
+    getUserOptions() {
+      try {
+        if (!!this.getPreviousQuery) {
+          let query = this.getPreviousQuery;
+          query =
+            this.getUserOptions.units === "imperial"
+              ? query.replace("metric", "imperial")
+              : query.replace("imperial", "metric");
+          this.setPreviousQuery(query);
+          this.getWeatherDataFromAPI({
+            type: "url",
+            data: query,
+          });
+        }
+      } catch (error) {}
+    },
   },
 
   methods: {
@@ -123,14 +139,23 @@ export default {
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
       let fullAPIURL = ``;
-      if (args.type === "coords") {
-        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
-      } else if (args.type === "zip") {
-        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?zip=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
-      } else if (args.type === "city&state") {
-        fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?q=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
+
+      switch (args.type) {
+        case "coords":
+          fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
+          break;
+        case "zip":
+          fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?zip=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
+          break;
+        case "city&state":
+          fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/weather?q=${args.data}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&cnt=7&units=${this.getUserOptions.units}`;
+          break;
+        case "url":
+          fullAPIURL = args.data;
+          break;
       }
       this.searchType = args.type;
+      this.setPreviousQuery(fullAPIURL);
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
@@ -139,6 +164,7 @@ export default {
       } catch (error) {
         this.setWeatherData({});
         this.setErrorMessage(error);
+        this.setPreviousQuery("");
       }
 
       // !remove
