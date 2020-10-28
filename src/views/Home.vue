@@ -31,8 +31,8 @@
       v-if="currentWeatherAvailable"
       :current-weather="getCurrentWeatherData"
     ></current-weather>
+    <daily-forecast v-if="dailyForecastAvailable" :forecast="getDailyForecastData"></daily-forecast>
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
-    <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
   </div>
 </template>
 
@@ -53,9 +53,9 @@ export default {
   // TODO use parsed data and build out components now
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
-  // TODO store previous URL + interpolated values into previousQuery object in store
-  // TODO run previousQuery when units are changed to update data
   // TODO animations / transitions
+  // TODO weather doesn't change metric properly when using zip/city&state and toggle
+  // TODO on load, regardless of saved settings, it defaults to imperial
 
   data() {
     return {
@@ -268,6 +268,7 @@ export default {
         this.setDailyForecast({
           temp_high: this.getWeatherData.daily[0].temp.max,
           temp_low: this.getWeatherData.daily[0].temp.min,
+          humidity: this.getWeatherData.daily.humidity,
           coords: {
             lat: this.getWeatherData.lat,
             lon: this.getWeatherData.lon,
@@ -283,6 +284,7 @@ export default {
         this.setDailyForecast({
           temp_high: this.getWeatherData.main.temp_max,
           temp_low: this.getWeatherData.main.temp_min,
+          humidity: null,
           coords: this.getWeatherData.coord,
           description: this.getWeatherData.weather[0].description,
           wind: this.getWeatherData.wind.speed,
@@ -366,6 +368,7 @@ export default {
         this.geoDataAvailable = true;
       }
       if (!localStorage.getItem("units")) {
+        console.log("shit broke");
         localStorage.setItem("units", "imperial");
       }
     },
