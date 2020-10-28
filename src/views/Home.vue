@@ -16,20 +16,23 @@
       <button class="btn-search" @click="searchByInput">
         <span>Search</span>
       </button>
+      <div class="btn-unit-change">
+        <span class="btn-unit btn-metric" @click="changeUnits('metric')"
+          >Metric: °C, m/s</span
+        >
+        <span class="btn-unit btn-imperial" @click="changeUnits('imperial')"
+          >Imperial: °F, mph</span
+        >
+      </div>
       <button @click="testWeathertest">TEST WEATHER BUTTON</button>
       <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
     </div>
-    <current-weather v-if="currentWeatherAvailable" :current-weather="getCurrentWeatherData"></current-weather>
+    <current-weather
+      v-if="currentWeatherAvailable"
+      :current-weather="getCurrentWeatherData"
+    ></current-weather>
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
     <daily-forecast v-if="dailyForecastAvailable"></daily-forecast>
-    <div class="btn-unit-change">
-      <span class="btn-unit btn-metric" @click="changeUnits('metric')"
-        >Metric: °C, m/s</span
-      >
-      <span class="btn-unit btn-imperial" @click="changeUnits('imperial')"
-        >Imperial: °F, mph</span
-      >
-    </div>
   </div>
 </template>
 
@@ -142,7 +145,8 @@ export default {
           fullAPIURL = args.data;
           break;
       }
-      this.searchType = args.type !== "url" ? args.type : this.getPreviousSearchType();
+      this.searchType =
+        args.type !== "url" ? args.type : this.getPreviousSearchType();
       this.setPreviousQuery(fullAPIURL);
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
@@ -222,13 +226,15 @@ export default {
       if (previousQuery.match(/onecall?/)) {
         console.log("onecall");
         return "coords";
-      }
-      else if (previousQuery.match(/weather?zip/)) {
+      } else if (previousQuery.match(/weather?zip/)) {
         return "zip";
-      }
-      else if (previousQuery.match(/weather?q/)) {
+      } else if (previousQuery.match(/weather?q/)) {
         return "city&state";
       }
+    },
+
+    getIconURL(icon) {
+      return `http://openweathermap.org/img/wn/${icon}@2x.png`;
     },
 
     parseCurrentWeather() {
@@ -240,6 +246,7 @@ export default {
           feels_like: this.getWeatherData.current.feels_like,
           description: this.getWeatherData.current.weather[0].description,
           wind: this.getWeatherData.current.wind_speed,
+          icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
         });
       } else if (
         this.searchType === "zip" ||
@@ -251,6 +258,7 @@ export default {
           feels_like: this.getWeatherData.main.feels_like,
           description: this.getWeatherData.weather[0].description,
           wind: this.getWeatherData.wind.speed,
+          icon: this.getIconURL(this.getWeatherData.weather[0].icon),
         });
       }
     },
@@ -266,6 +274,7 @@ export default {
           },
           description: this.getWeatherData.daily[0].weather[0].description,
           wind: this.getWeatherData.daily[0].wind_speed,
+          icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
         });
       } else if (
         this.searchType === "zip" ||
@@ -277,6 +286,7 @@ export default {
           coords: this.getWeatherData.coord,
           description: this.getWeatherData.weather[0].description,
           wind: this.getWeatherData.wind.speed,
+          icon: this.getIconURL(this.getWeatherData.weather[0].icon),
         });
       }
     },
@@ -291,6 +301,7 @@ export default {
             humidity: forecast.humidity,
             description: forecast.weather[0].description,
             wind: forecast.wind_speed,
+            icon: this.getIconURL(forecast.weather[0].icon),
           });
         });
       }
