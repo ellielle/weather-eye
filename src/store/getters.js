@@ -17,7 +17,7 @@ export default {
   getDailyForecastData(state) {
     return state.dailyForecast;
   },
-  getWeeklyForecastData(state){
+  getWeeklyForecastData(state) {
     return state.weeklyForecast;
   },
   getUserOptions(state) {
@@ -25,5 +25,11 @@ export default {
   },
   getPreviousQuery(state) {
     return state.previousQuery;
-  }
+  },
+  getAvailableWeatherUnits(state) {
+    return state.availableWeatherUnits;
+  },
+  getWeatherUnits(state) {
+    return state.userWeatherUnits;
+  },
 };

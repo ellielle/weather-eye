@@ -6,6 +6,7 @@ import {
   SET_CURRENT_WEATHER,
   SET_USER_OPTIONS,
   SET_PREVIOUS_QUERY,
+  SET_USER_UNITS
 } from "./mutation-types";
 
 export default {
@@ -30,5 +31,8 @@ export default {
   },
   [SET_PREVIOUS_QUERY](state, previousQuery) {
     state.previousQuery = previousQuery;
+  },
+  [SET_USER_UNITS](state, userUnits) {
+    state.userWeatherUnits = userUnits;
   }
 };

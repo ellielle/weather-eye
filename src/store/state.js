@@ -8,4 +8,18 @@ export default {
   currentWeather: {},
   dailyForecast: {},
   weeklyForecast: {},
+  availableWeatherUnits: {
+    metric: {
+      temp: " °C",
+      wind: " m/s",
+    },
+    imperial: {
+      temp: " °F",
+      wind: " mph",
+    },
+  },
+  userWeatherUnits: {
+    temp: " °F",
+    wind: " mph",
+  }
 };
