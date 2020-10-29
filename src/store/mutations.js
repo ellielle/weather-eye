@@ -8,6 +8,7 @@ import {
   SET_PREVIOUS_QUERY,
   SET_USER_UNITS,
   SET_CURRENT_DATETIME,
+  SET_CURRENT_CITY,
 } from "./mutation-types";
 
 export default {
@@ -39,4 +40,7 @@ export default {
   [SET_CURRENT_DATETIME](state, newDateTime) {
     state.currentDateTime = newDateTime;
   },
+  [SET_CURRENT_CITY](state, currentCity) {
+    state.currentCity = currentCity;
+  }
 };

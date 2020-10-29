@@ -33,5 +33,8 @@ export default {
   },
   setCurrentDateTime({commit}, newDateTime) {    
     commit("SET_CURRENT_DATETIME", newDateTime);
+  },
+  setCurrentCity({commit}, currentCity) {
+    commit("SET_CURRENT_CITY", currentCity);
   }
 };

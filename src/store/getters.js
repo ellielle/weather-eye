@@ -34,5 +34,8 @@ export default {
   },
   getCurrentDateTime(state) {
     return state.currentDateTime;
+  },
+  getCurrentCity(state) {
+    return state.currentCity;
   }
 };
