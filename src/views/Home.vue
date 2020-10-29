@@ -35,7 +35,10 @@
       v-if="dailyForecastAvailable"
       :forecast="getDailyForecastData"
     ></daily-forecast>
-    <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
+    <weekly-forecast
+      v-if="weeklyForecastAvailable"
+      :weekly-forecast="getWeeklyForecastData"
+    ></weekly-forecast>
   </div>
 </template>
 
@@ -354,12 +357,14 @@ export default {
         unitChanged = true;
       }
       if (unitChanged) {
-        this.setUserOptions({ units: newUnit });
+        const currentCity = this.getUserOptions.cityName;
+        this.setUserOptions({ units: newUnit, cityName: currentCity });
         localStorage.setItem("units", newUnit);
       }
     },
 
     getStoredUserOptions() {
+      const currentCity = this.getUserOptions.cityName || null;
       if (!this.isLocationSavedInStorage()) {
         if (!this.getGeoLocationData()) {
           this.geoDataAvailable = false;
@@ -370,11 +375,10 @@ export default {
         this.geoDataAvailable = true;
       }
       if (!localStorage.getItem("units")) {
-        console.log("shit broke");
         localStorage.setItem("units", "imperial");
-        this.setUserOptions({ units: "imperial" });
+        this.setUserOptions({ units: "imperial", cityName: currentCity });
       } else {
-        this.setUserOptions({ units: localStorage.getItem("units") });
+        this.setUserOptions({ units: localStorage.getItem("units"), cityName: currentCity });
       }
     },
 
