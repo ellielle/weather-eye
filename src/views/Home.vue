@@ -31,7 +31,10 @@
       v-if="currentWeatherAvailable"
       :current-weather="getCurrentWeatherData"
     ></current-weather>
-    <daily-forecast v-if="dailyForecastAvailable" :forecast="getDailyForecastData"></daily-forecast>
+    <daily-forecast
+      v-if="dailyForecastAvailable"
+      :forecast="getDailyForecastData"
+    ></daily-forecast>
     <weekly-forecast v-if="weeklyForecastAvailable"></weekly-forecast>
   </div>
 </template>
@@ -55,7 +58,6 @@ export default {
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions
   // TODO weather doesn't change metric properly when using zip/city&state and toggle
-  // TODO on load, regardless of saved settings, it defaults to imperial
 
   data() {
     return {
@@ -268,7 +270,7 @@ export default {
         this.setDailyForecast({
           temp_high: this.getWeatherData.daily[0].temp.max,
           temp_low: this.getWeatherData.daily[0].temp.min,
-          humidity: this.getWeatherData.daily.humidity,
+          humidity: this.getWeatherData.daily[0].humidity,
           coords: {
             lat: this.getWeatherData.lat,
             lon: this.getWeatherData.lon,
@@ -370,6 +372,9 @@ export default {
       if (!localStorage.getItem("units")) {
         console.log("shit broke");
         localStorage.setItem("units", "imperial");
+        this.setUserOptions({ units: "imperial" });
+      } else {
+        this.setUserOptions({ units: localStorage.getItem("units") });
       }
     },
 
@@ -384,10 +389,8 @@ export default {
     },
   },
 
-  created() {
-    this.getStoredUserOptions();
-  },
   mounted() {
+    this.getStoredUserOptions();
     this.setSelectedOption(this.getUserOptions.units);
   },
 };

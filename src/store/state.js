@@ -3,7 +3,7 @@ export default {
   giphyAPIEndpoint: "https://api.giphy.com/v1",
   previousQuery: "",
   userCoordinates: { lat: null, lon: null },
-  userOptions: { units: "imperial" },
+  userOptions: { units: null },
   weatherData: {},
   currentWeather: {},
   dailyForecast: {},
