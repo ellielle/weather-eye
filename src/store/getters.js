@@ -32,4 +32,7 @@ export default {
   getWeatherUnits(state) {
     return state.userWeatherUnits;
   },
+  getCurrentDateTime(state) {
+    return state.currentDateTime;
+  }
 };

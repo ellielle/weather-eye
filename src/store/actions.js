@@ -31,4 +31,7 @@ export default {
         : state.availableWeatherUnits.metric;    
     commit("SET_USER_UNITS", newWeatherUnits);
   },
+  setCurrentDateTime({commit}, newDateTime) {    
+    commit("SET_CURRENT_DATETIME", newDateTime);
+  }
 };

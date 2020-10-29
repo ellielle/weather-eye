@@ -1,11 +1,17 @@
 <template>
-  <div>
+  <div class="container-current-weather">
     <h6>CURRENT WEATHER</h6>
-    <div class="current-temp">{{ currentWeather.temp }}{{this.getWeatherUnits.temp}}</div>
+    <div class="current-temp">
+      {{ currentWeather.temp }}{{ this.getWeatherUnits.temp }}
+    </div>
     <div class="humidity">{{ currentWeather.humidity }}%</div>
-    <div class="feels-like">{{ currentWeather.feels_like }}{{this.getWeatherUnits.temp}}</div>
+    <div class="feels-like">
+      {{ currentWeather.feels_like }}{{ this.getWeatherUnits.temp }}
+    </div>
     <div class="description">{{ currentWeather.description }}</div>
-    <div class="wind">{{ currentWeather.wind }}{{this.getWeatherUnits.wind}}</div>
+    <div class="wind">
+      {{ currentWeather.wind }}{{ this.getWeatherUnits.wind }}
+    </div>
     <div class="icon">
       <img :src="currentWeather.icon" alt="Weather Icon" />
     </div>
@@ -24,7 +30,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["getWeatherUnits"]),
+    ...mapGetters(["getWeatherUnits", "getCurrentDateTime"]),
   },
 };
 </script>

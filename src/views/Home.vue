@@ -60,7 +60,7 @@ export default {
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions
-  // TODO weather doesn't change metric properly when using zip/city&state and toggle
+  // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
 
   data() {
     return {
@@ -131,6 +131,7 @@ export default {
       "setWeeklyForecast",
       "setUserOptions",
       "setPreviousQuery",
+      "setCurrentDateTime",
     ]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
@@ -156,6 +157,7 @@ export default {
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
+        this.setCurrentDateTime(this.getFormattedDateTime());
         this.setWeatherData(data);
         this.parseWeatherData();
       } catch (error) {
@@ -378,13 +380,46 @@ export default {
         localStorage.setItem("units", "imperial");
         this.setUserOptions({ units: "imperial", cityName: currentCity });
       } else {
-        this.setUserOptions({ units: localStorage.getItem("units"), cityName: currentCity });
+        this.setUserOptions({
+          units: localStorage.getItem("units"),
+          cityName: currentCity,
+        });
       }
     },
 
     setSelectedOption(userUnits) {
       const selectedButton = document.querySelector(`.btn-${userUnits}`);
       selectedButton.classList.add("selected");
+    },
+
+    getFormattedDateTime() {
+      const baseDateTime = new Date(Date.now());
+      let baseHours = baseDateTime.getHours();
+      const baseMinutes = baseDateTime.getMinutes();
+      const baseDay = baseDateTime.getDate();
+      let isMorning = true;
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const baseMonth = months[baseDateTime.getMonth()];
+      if (baseHours > 12) {
+        baseHours -= 12;
+        isMorning = false;
+      }
+      return `${baseHours}:${baseMinutes}${
+        isMorning ? "am" : "pm"
+      }, ${baseMonth} ${baseDay}`;
     },
 
     // !remove

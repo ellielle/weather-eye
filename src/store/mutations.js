@@ -6,7 +6,8 @@ import {
   SET_CURRENT_WEATHER,
   SET_USER_OPTIONS,
   SET_PREVIOUS_QUERY,
-  SET_USER_UNITS
+  SET_USER_UNITS,
+  SET_CURRENT_DATETIME,
 } from "./mutation-types";
 
 export default {
@@ -34,5 +35,8 @@ export default {
   },
   [SET_USER_UNITS](state, userUnits) {
     state.userWeatherUnits = userUnits;
-  }
+  },
+  [SET_CURRENT_DATETIME](state, newDateTime) {
+    state.currentDateTime = newDateTime;
+  },
 };

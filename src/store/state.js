@@ -6,6 +6,7 @@ export default {
   userOptions: { units: null, cityName: null },
   weatherData: {},
   currentWeather: {},
+  currentDateTime: "",
   dailyForecast: {},
   weeklyForecast: {},
   availableWeatherUnits: {

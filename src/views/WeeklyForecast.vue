@@ -3,12 +3,12 @@
     <h6>WEEKLY FORECAST</h6>
     <div>
       <ul v-for="day in weeklyForecast" :key="day.dt">
-        <li>{{day.temp_high}}</li>
-        <li>{{day.temp_low}}</li>
-        <li>{{day.humidity}}</li>
-        <li>{{day.description}}</li>
-        <li>{{day.wind}}</li>
-        <img :src="day.icon" alt="Weather Icon" crossorigin="anonymous">
+        <li>{{ day.temp_high }}</li>
+        <li>{{ day.temp_low }}</li>
+        <li>{{ day.humidity }}</li>
+        <li>{{ day.description }}</li>
+        <li>{{ day.wind }}</li>
+        <img :src="day.icon" alt="Weather Icon" crossorigin="anonymous" />
       </ul>
     </div>
   </div>
@@ -31,5 +31,4 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-
 </style>
