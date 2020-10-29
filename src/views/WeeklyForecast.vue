@@ -3,8 +3,8 @@
     <h6>WEEKLY FORECAST</h6>
     <div>
       <ul v-for="day in weeklyForecast" :key="day.dt">
-        <li>{{ day.temp_high }}</li>
-        <li>{{ day.temp_low }}</li>
+        <li>{{ Math.round(Number(day.temp_high)) }}</li>
+        <li>{{ Math.round(Number(day.temp_low)) }}</li>
         <li>{{ day.humidity }}</li>
         <li>{{ day.description }}</li>
         <li>{{ day.wind }}</li>

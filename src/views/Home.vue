@@ -18,10 +18,10 @@
       </button>
       <div class="btn-unit-change">
         <span class="btn-unit btn-metric" @click="changeUnits('metric')"
-          >Metric: °C, m/s</span
+          >Metric: °C</span
         >
         <span class="btn-unit btn-imperial" @click="changeUnits('imperial')"
-          >Imperial: °F, mph</span
+          >Imperial: °F</span
         >
       </div>
       <button @click="testWeathertest">TEST WEATHER BUTTON</button>
@@ -31,14 +31,14 @@
       v-if="currentWeatherAvailable"
       :current-weather="getCurrentWeatherData"
     ></current-weather>
-    <daily-forecast
+    <!-- <daily-forecast
       v-if="dailyForecastAvailable"
       :forecast="getDailyForecastData"
     ></daily-forecast>
     <weekly-forecast
       v-if="weeklyForecastAvailable"
       :weekly-forecast="getWeeklyForecastData"
-    ></weekly-forecast>
+    ></weekly-forecast> -->
   </div>
 </template>
 

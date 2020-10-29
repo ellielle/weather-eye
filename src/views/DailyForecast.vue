@@ -2,10 +2,10 @@
   <div class="container-daily-forecast">
     <h6>DAILY FORECAST</h6>
     <div class="temp-high">
-      {{ forecast.temp_high }}{{ this.getWeatherUnits.temp }}
+      {{ Math.round(Number(forecast.temp_high)) }}{{ this.getWeatherUnits.temp }}
     </div>
     <div class="temp-low">
-      {{ forecast.temp_low }}{{ this.getWeatherUnits.temp }}
+      {{ Math.round(Number(forecast.temp_low)) }}{{ this.getWeatherUnits.temp }}
     </div>
     <div class="humidity">{{ forecast.humidity }}% VALUE IS SET TO NULL</div>
     <div class="coordinates">{{ forecast.coords }}</div>

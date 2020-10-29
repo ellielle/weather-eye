@@ -11,16 +11,16 @@ export default {
   weeklyForecast: {},
   availableWeatherUnits: {
     metric: {
-      temp: " °C",
+      temp: "°C",
       wind: " m/s",
     },
     imperial: {
-      temp: " °F",
+      temp: "°F",
       wind: " mph",
     },
   },
   userWeatherUnits: {
-    temp: " °F",
+    temp: "°F",
     wind: " mph",
   }
 };

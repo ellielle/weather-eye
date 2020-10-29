@@ -2,11 +2,11 @@
   <div class="container-current-weather">
     <h6>CURRENT WEATHER</h6>
     <div class="current-temp">
-      {{ currentWeather.temp }}{{ this.getWeatherUnits.temp }}
+      {{ Math.round(Number(currentWeather.temp)) }}{{ this.getWeatherUnits.temp }}
     </div>
     <div class="humidity">{{ currentWeather.humidity }}%</div>
     <div class="feels-like">
-      {{ currentWeather.feels_like }}{{ this.getWeatherUnits.temp }}
+      {{ Math.round(Number(currentWeather.feels_like)) }}{{ this.getWeatherUnits.temp }}
     </div>
     <div class="description">{{ currentWeather.description }}</div>
     <div class="wind">
@@ -31,6 +31,10 @@ export default {
 
   computed: {
     ...mapGetters(["getWeatherUnits", "getCurrentDateTime"]),
+  },
+
+  mounted() {
+    console.log(typeof this.currentWeather.temp);
   },
 };
 </script>
