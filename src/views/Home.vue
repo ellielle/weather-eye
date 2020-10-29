@@ -4,18 +4,19 @@
       Make note for: ZIP Code or City & Country code OR link to find open
       weather code via their search engine
     </div>
-    <hr />
-    <div id="search-bar">
-      <input
-        type="text"
-        placeholder="ZIP Code or City & Country code"
-        v-model="userInput"
-        aria-label="City Search"
-        @keydown.enter="searchByInput"
-      />
-      <button class="btn-search" @click="searchByInput">
-        <span>Search</span>
-      </button>
+    <div class="search-bar">
+      <div class="container-btn-search">
+        <input
+          type="text"
+          placeholder="ZIP Code or City & Country code"
+          v-model="userInput"
+          aria-label="City Search"
+          @keydown.enter="searchByInput"
+        />
+        <button class="btn-search" @click="searchByInput">
+          <span>Search</span>
+        </button>
+      </div>
       <div class="btn-unit-change">
         <span class="btn-unit btn-metric" @click="changeUnits('metric')"
           >Metric: °C</span
@@ -24,9 +25,9 @@
           >Imperial: °F</span
         >
       </div>
-      <button @click="testWeathertest">TEST WEATHER BUTTON</button>
-      <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
     </div>
+    <button @click="testWeathertest">TEST WEATHER BUTTON</button>
+    <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
     <current-weather
       v-if="currentWeatherAvailable"
       :current-weather="getCurrentWeatherData"
@@ -60,6 +61,7 @@ export default {
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions
+  // TODO get and set current location
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
 
   data() {
@@ -132,6 +134,7 @@ export default {
       "setUserOptions",
       "setPreviousQuery",
       "setCurrentDateTime",
+      "setCurrentCity",
     ]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
@@ -245,7 +248,7 @@ export default {
     },
 
     parseCurrentWeather() {
-      // This method formats data for CurrentWeather component regardless of origin API call
+      // The following 3 parse methods format data regardless of origin API call
       if (this.searchType === "coords") {
         this.setCurrentWeather({
           temp: this.getWeatherData.current.temp,
@@ -267,6 +270,11 @@ export default {
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
         });
+        if (!!this.getWeatherData.name) {
+          this.setCurrentCity(
+            `${this.getWeatherData.name}, ${this.getWeatherData.sys.country}`
+          );
+        }
       }
     },
 
@@ -448,9 +456,15 @@ input[type="text"] {
   color: var(--text-color-primary);
 }
 
-#search-bar {
+.search-bar {
   background-color: var(--main-background);
   width: 100%;
+  display: grid;
+  grid-area: 1fr / 1fr 1fr 2fr 1fr 1fr 1fr;
+}
+
+.container-btn-search {
+  grid-area: 1 / 3 / 1 / 4;
 }
 
 .btn-search {
@@ -492,6 +506,7 @@ input[type="text"] {
 }
 
 .btn-unit-change {
+  grid-area: 1 / 4 / 1 / 5;
   border: solid 1px white;
   border-radius: 10px;
   width: fit-content;

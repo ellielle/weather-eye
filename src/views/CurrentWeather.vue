@@ -1,19 +1,23 @@
 <template>
   <div class="container-current-weather">
-    <h6>CURRENT WEATHER</h6>
-    <div class="current-temp">
-      {{ Math.round(Number(currentWeather.temp)) }}{{ this.getWeatherUnits.temp }}
-    </div>
+    <p class="date-time">{{getCurrentDateTime}}</p>
+    <p class="city-name">{{ getCityOrCoords }}</p>
+    <img :src="currentWeather.icon" alt="Weather Icon" />
+    <p class="current-temp">
+      {{ Math.round(Number(currentWeather.temp))
+      }}{{ this.getWeatherUnits.temp }}
+    </p>
     <div class="humidity">{{ currentWeather.humidity }}%</div>
     <div class="feels-like">
-      {{ Math.round(Number(currentWeather.feels_like)) }}{{ this.getWeatherUnits.temp }}
+      {{ Math.round(Number(currentWeather.feels_like))
+      }}{{ this.getWeatherUnits.temp }}
     </div>
     <div class="description">{{ currentWeather.description }}</div>
     <div class="wind">
       {{ currentWeather.wind }}{{ this.getWeatherUnits.wind }}
     </div>
     <div class="icon">
-      <img :src="currentWeather.icon" alt="Weather Icon" />
+      
     </div>
   </div>
 </template>
@@ -30,11 +34,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["getWeatherUnits", "getCurrentDateTime"]),
-  },
-
-  mounted() {
-    console.log(typeof this.currentWeather.temp);
+    ...mapGetters(["getWeatherUnits", "getCurrentDateTime", "getCurrentCity"]),
+    getCityOrCoords() {
+      return this.getCurrentCity || "Current Weather:";
+    }
   },
 };
 </script>
