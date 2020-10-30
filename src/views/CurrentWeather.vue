@@ -2,7 +2,7 @@
   <div class="container-current-weather">
     <p class="date-time">{{ getCurrentDateTime }}</p>
     <p class="city-name">{{ getCityOrCoords }}</p>
-    <img :src="currentWeather.icon" alt="Weather Icon" />
+    <img class="icon" :src="currentWeather.icon" alt="Weather Icon" />
     <p class="current-temp">
       {{ Math.round(Number(currentWeather.temp))
       }}{{ this.getWeatherUnits.temp }}
@@ -44,23 +44,43 @@ p {
 }
 
 .container-current-weather {
+  display: grid;
+  grid: 1fr 1fr 2fr 1fr 1fr / 1fr;
+}
 
+.date-time {
+  color: orangered;
+  grid-area: 1 / 1 / 1 / 1;
 }
 
 .city-name {
   font-size: 25px;
   font-weight: 500;
+  grid-area: 2 / 1 / 2 / 1;
 }
 
-.date-time {}
+.icon {
+  grid-area: 3 / 1 / 3 / 1;
+}
 
-.current-temp {}
+.current-temp {
+  grid-area: 3 / 1 / 3 / 1;
+}
 
-.himidity {}
+.feels-like {
+  
+  grid-area: 4 / 1 / 4 / 1;
+}
 
-.feels-like{}
+.description {
+  grid-area: 4 / 1 / 4 / 1;
+}
 
-.description{}
-.wind{}
-.icon{}
+.himidity {
+  grid-area: 5 / 1 / 5 / 1;
+}
+
+.wind {
+  grid-area: 5 / 1 / 5 / 1;
+}
 </style>

@@ -67,7 +67,7 @@ export default {
   // TODO use parsed data and build out components now
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
-  // TODO animations / transitions
+  // TODO animations / transitions (current and daily should slide in from left, weekly from right)
   // TODO get and set current location
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
 
@@ -461,8 +461,10 @@ input[type="text"] {
 }
 
 .container-components {
+  padding-top: 5px;
   display: grid;
   grid: 1fr 1fr / 1fr 1fr 2fr 2fr 1fr;
+  grid-gap: 5px;
   // TODO will need to be dynamic grid to account for components not being rendered if no data for them
   // ! text-align: center in #app may need to be removed and formatted around
 }
@@ -576,8 +578,8 @@ input[type="text"] {
 .btn-metric,
 .btn-imperial {
   transition: all 0.3s;
-  &:hover span {
-    background-color: white;
+  &:hover {
+    color: white;
   }
 }
 
