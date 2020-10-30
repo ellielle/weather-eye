@@ -1,6 +1,6 @@
 <template>
   <div class="container-current-weather">
-    <p class="date-time">{{getCurrentDateTime}}</p>
+    <p class="date-time">{{ getCurrentDateTime }}</p>
     <p class="city-name">{{ getCityOrCoords }}</p>
     <img :src="currentWeather.icon" alt="Weather Icon" />
     <p class="current-temp">
@@ -15,9 +15,6 @@
     <div class="description">{{ currentWeather.description }}</div>
     <div class="wind">
       {{ currentWeather.wind }}{{ this.getWeatherUnits.wind }}
-    </div>
-    <div class="icon">
-      
     </div>
   </div>
 </template>
@@ -37,9 +34,33 @@ export default {
     ...mapGetters(["getWeatherUnits", "getCurrentDateTime", "getCurrentCity"]),
     getCityOrCoords() {
       return this.getCurrentCity || "Current Weather:";
-    }
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
+p {
+  margin: 0;
+}
+
+.container-current-weather {
+
+}
+
+.city-name {
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.date-time {}
+
+.current-temp {}
+
+.himidity {}
+
+.feels-like{}
+
+.description{}
+.wind{}
+.icon{}
 </style>

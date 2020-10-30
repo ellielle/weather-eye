@@ -1,6 +1,6 @@
 <template>
   <div class="container-main">
-    <div>
+    <div class="error-display">
       Make note for: ZIP Code or City & Country code OR link to find open
       weather code via their search engine
     </div>
@@ -25,21 +25,28 @@
           >Imperial: °F</span
         >
       </div>
+      <button class="btn-refresh" @click="refreshWeather">
+        <span>Refresh</span>
+      </button>
     </div>
-    <button @click="testWeathertest">TEST WEATHER BUTTON</button>
     <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
-    <current-weather
-      v-if="currentWeatherAvailable"
-      :current-weather="getCurrentWeatherData"
-    ></current-weather>
-    <!-- <daily-forecast
-      v-if="dailyForecastAvailable"
-      :forecast="getDailyForecastData"
-    ></daily-forecast>
-    <weekly-forecast
+    <div class="container-components">
+      <current-weather
+        class="current-weather"
+        v-if="currentWeatherAvailable"
+        :current-weather="getCurrentWeatherData"
+      ></current-weather>
+      <daily-forecast
+        class="daily-forecast"
+        v-if="dailyForecastAvailable"
+        :forecast="getDailyForecastData"
+      ></daily-forecast>
+      <!-- <weekly-forecast
+      class="weekly-forecast"
       v-if="weeklyForecastAvailable"
       :weekly-forecast="getWeeklyForecastData"
     ></weekly-forecast> -->
+    </div>
   </div>
 </template>
 
@@ -430,10 +437,7 @@ export default {
       }, ${baseMonth} ${baseDay}`;
     },
 
-    // !remove
-    testWeathertest() {
-      this.getWeatherDataFromAPI();
-    },
+    refreshWeather() {},
   },
 
   mounted() {
@@ -456,26 +460,53 @@ input[type="text"] {
   color: var(--text-color-primary);
 }
 
-.search-bar {
-  background-color: var(--main-background);
-  width: 100%;
+.container-components {
   display: grid;
-  grid-area: 1fr / 1fr 1fr 2fr 1fr 1fr 1fr;
+  grid: 1fr 1fr / 1fr 1fr 2fr 2fr 1fr;
+  // TODO will need to be dynamic grid to account for components not being rendered if no data for them
+  // ! text-align: center in #app may need to be removed and formatted around
+}
+
+.search-bar {
+  background-color: var(--sub-background);
+  border: var(--main-border);
+  width: var(--screen-width);
+  display: grid;
+  grid: 1fr / 1fr 1fr 2fr 1fr 1fr;
 }
 
 .container-btn-search {
   grid-area: 1 / 3 / 1 / 4;
 }
 
+.current-weather,
+.daily-forecast,
+.weekly-forecast {
+  padding: 15px 0 0 0;
+  background-color: var(--sub-background);
+  border: var(--main-border);
+}
+
+.current-weather {
+  grid-area: 1 / 3 / 1 / 4;
+}
+
+.daily-forecast {
+  grid-area: 2 / 3 / 2 / 4;
+}
+
+.weekly-forecast {
+  grid-area: 1 / 4 / 3 / 5;
+}
+
+.btn-refresh,
 .btn-search {
   font-size: 1rem;
   height: 30px;
   width: 85px;
-  border: 3px solid var(--sub-background);
-  border-radius: 3px;
+  border: 1px solid var(--main-background);
   color: white;
   background-color: var(--sub-background);
-  margin-left: -15px;
   transition: all 0.5s;
   &:focus {
     outline: none;
@@ -483,6 +514,22 @@ input[type="text"] {
   &:hover {
     cursor: pointer;
   }
+}
+
+.btn-refresh {
+  grid-area: 1 / 5 / 1 / 6;
+  span {
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+  }
+  &:hover {
+    animation: rainbow 2s infinite;
+  }
+}
+
+.btn-search {
+  margin-left: -15px;
   &:hover span {
     padding-right: 10px;
   }
@@ -507,8 +554,7 @@ input[type="text"] {
 
 .btn-unit-change {
   grid-area: 1 / 4 / 1 / 5;
-  border: solid 1px white;
-  border-radius: 10px;
+  border: solid 1px var(--main-background);
   width: fit-content;
   padding: 5px;
   background-color: var(--sub-background);
@@ -527,18 +573,60 @@ input[type="text"] {
   }
 }
 
+.btn-metric,
+.btn-imperial {
+  transition: all 0.3s;
+  &:hover span {
+    background-color: white;
+  }
+}
+
 .btn-metric {
-  padding: 5px;
+  padding: 6px;
   margin-left: -5px;
-  border-right: solid 1px white;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
 }
 
 .btn-imperial {
-  padding: 5px;
+  padding: 6px;
   margin-right: -5px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+}
+
+@keyframes rainbow {
+  0% {
+    color: white;
+  }
+  10% {
+    color: yellow;
+  }
+  20% {
+    color: orange;
+  }
+  30% {
+    color: orangered;
+  }
+  40% {
+    color: red;
+  }
+  45% {
+    color: maroon;
+  }
+  50% {
+    color: purple;
+  }
+  55% {
+    color: blue;
+  }
+  70% {
+    color: cyan;
+  }
+  80% {
+    color: green;
+  }
+  90% {
+    color: greenyellow;
+  }
+  100% {
+    color: white;
+  }
 }
 </style>
