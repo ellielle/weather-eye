@@ -5,8 +5,20 @@
       weather code via their search engine
     </div>
     <div class="search-bar">
+      <svg
+        class="location-image"
+        xmlns="http://www.w3.org/2000/svg"
+        height="29"
+        viewBox="0 0 24 24"
+        width="29"
+        @click="saveCurrentLocation"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+        />
+      </svg>
       <div class="container-btn-search">
-        <svg class="location-image" xmlns="http://www.w3.org/2000/svg" height="29" viewBox="0 0 24 24" width="29"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         <input
           type="text"
           placeholder="ZIP Code or City & Country code"
@@ -75,8 +87,9 @@ export default {
   // TODO animations / transitions (current and daily should slide in from left, weekly from right)
   // TODO get and set current location
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
-  // ! TODO style the search bar
-  // ! TODO remove auto saving of coordinates
+  // ? TODO style the search bar
+  // TODO set up auto weather search in mounted() if user coords exist
+  // ? TODO make sure to pull saved currentCity from store ?
 
   data() {
     return {
@@ -200,13 +213,6 @@ export default {
             lat: userLat,
             lon: userLon,
           });
-          localStorage.setItem(
-            "coords",
-            JSON.stringify({
-              lat: userLat,
-              lon: userLon,
-            })
-          );
         });
         return true;
       } else {
@@ -343,16 +349,6 @@ export default {
       }
     },
 
-    saveUserLocation() {
-      // TODO save user coords if they want to save the location as their main
-      if (this.getWeatherData.coord) {
-        this.setUserCoordinates({
-          lat: this.getWeatherData.coord.lat,
-          lon: this.getWeatherData.lon,
-        });
-      }
-    },
-
     setErrorMessage(message) {
       // TODO
       // ! remove logs
@@ -457,6 +453,44 @@ export default {
         // ! TODO tooltip popover thing saying nothing to refresh
       }
     },
+
+    saveUserLocation(userLat, userLon) {
+      try {
+        localStorage.setItem(
+          "coords",
+          JSON.stringify({
+            lat: userLat,
+            lon: userLon,
+          })
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    saveCurrentLocation() {
+      let newLat;
+      let newLon;
+      if (this.getWeatherData.coord) {
+        newLat = this.getWeatherData.coord.lat;
+        newLon = this.getWeatherData.coord.lon;
+        this.setUserCoordinates({
+          lat: newLat,
+          lon: newLon,
+        });
+        this.saveUserLocation(newLat, newLon);
+      } else if (this.getWeatherData.lat && this.getWeatherData.lon) {
+        newLat = this.getWeatherData.lat;
+        newLon = this.getWeatherData.lon;
+        this.setUserCoordinates({
+          lat: newLat,
+          lon: newLon,
+        });
+        this.saveUserLocation(newLat, newLon);
+      }
+    },
+
+    getLocationWeather() {},
   },
 
   mounted() {
@@ -467,6 +501,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+// Base Style
 input[type="text"] {
   font-size: 1rem;
   height: 20px;
@@ -475,36 +510,20 @@ input[type="text"] {
   border-radius: 3px;
 }
 
-.location-image {
-  width: 29px;
-  height: 29px;
-  fill: white;
-}
-
 .container-main {
   color: var(--text-color-primary);
 }
 
+// Component grid
+
 .container-components {
   padding-top: 5px;
   display: grid;
-  grid-template-rows: fit-content repeat(2, [row] minmax(100px, 1fr));
-  grid-template-columns: 1fr 1fr repeat(2, [col] minmax(100px, 3fr)) 1fr 1fr;
+  grid-template-rows: fit-content repeat(2, minmax(100px, 1fr));
+  grid-template-columns: 1fr 1fr repeat(2, minmax(100px, 3fr)) 1fr 1fr;
   grid-gap: 5px;
   // TODO will need to be dynamic grid to account for components not being rendered if no data for them
   // ! text-align: center in #app may need to be removed and formatted around
-}
-
-.search-bar {
-  background-color: var(--sub-background);
-  border: var(--main-border);
-  width: var(--screen-width);
-  display: grid;
-  grid: 1fr / 1fr 1fr 2fr 1fr 1fr;
-}
-
-.container-btn-search {
-  grid-area: 1 / 3 / 1 / 4;
 }
 
 .current-weather,
@@ -526,6 +545,29 @@ input[type="text"] {
   grid-area: 1 / 4 / 3 / 5;
 }
 
+// Search Bar
+
+.location-image {
+  grid-column: col 2 / col 3;
+  justify-self: end;
+  cursor: pointer;
+  width: 29px;
+  height: 29px;
+  fill: white;
+}
+
+.search-bar {
+  background-color: var(--sub-background);
+  border: var(--main-border);
+  width: var(--screen-width);
+  display: grid;
+  grid: [row] 1fr / repeat(2, [col] 1fr) [col] 2fr repeat(2, [col] 1fr);
+}
+
+.container-btn-search {
+  grid-column: col 3 / col 4;
+}
+
 .btn-refresh,
 .btn-search {
   font-size: 1rem;
@@ -544,7 +586,7 @@ input[type="text"] {
 }
 
 .btn-refresh {
-  grid-area: 1 / 5 / 1 / 6;
+  grid-column: col 5 / col 6;
   span {
     display: inline-block;
     position: relative;
@@ -580,7 +622,7 @@ input[type="text"] {
 }
 
 .btn-unit-change {
-  grid-area: 1 / 4 / 1 / 5;
+  grid-column: col 4 / col 5;
   border: solid 1px var(--main-background);
   width: fit-content;
   padding: 5px;
