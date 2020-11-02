@@ -12,7 +12,9 @@
     </div>
     <div class="humidity" v-if="forecast.humidity">{{ forecast.humidity }}</div>
     <div class="description">{{ capitalizeDescription }}.</div>
-    <div class="wind">Wind: {{ forecast.wind }}{{ this.getWeatherUnits.wind }}</div>
+    <div class="wind">
+      Wind: {{ forecast.wind }}{{ this.getWeatherUnits.wind }}
+    </div>
   </div>
 </template>
 <script>

@@ -66,13 +66,18 @@ p {
   grid-area: row 2 / col / row 3 / col 3;
 }
 
-.icon, .current-temp, .feels-like, .humidity, .description, .wind {
+.icon,
+.current-temp,
+.feels-like,
+.humidity,
+.description,
+.wind {
   align-self: center;
 }
 
 .icon {
   grid-area: row 3 / col / row 4 / col;
-  justify-self: right; 
+  justify-self: right;
 }
 
 .current-temp {

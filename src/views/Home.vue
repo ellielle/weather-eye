@@ -6,6 +6,7 @@
     </div>
     <div class="search-bar">
       <div class="container-btn-search">
+        <svg class="location-image" xmlns="http://www.w3.org/2000/svg" height="29" viewBox="0 0 24 24" width="29"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
         <input
           type="text"
           placeholder="ZIP Code or City & Country code"
@@ -69,13 +70,13 @@ export default {
     DailyForecast,
   },
 
-  // TODO consider redoing weather displays so that margins aren't required. Make parent divs for each grouped set of data
   // TODO use parsed data and build out components now
-  // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions (current and daily should slide in from left, weekly from right)
   // TODO get and set current location
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
+  // ! TODO style the search bar
+  // ! TODO remove auto saving of coordinates
 
   data() {
     return {
@@ -187,9 +188,6 @@ export default {
         this.setErrorMessage(error);
         this.setPreviousQuery("");
       }
-
-      // !remove
-      console.log(this.getWeatherData);
       this.searchType = "";
     },
 
@@ -251,7 +249,6 @@ export default {
 
     getPreviousSearchType() {
       const previousQuery = this.getPreviousQuery;
-      console.log(this.getPreviousQuery);
       if (previousQuery.match(/onecall?/)) {
         console.log("onecall");
         return "coords";
@@ -449,7 +446,17 @@ export default {
       }, ${baseMonth} ${baseDay}`;
     },
 
-    refreshWeather() {},
+    refreshWeather() {
+      if (this.getPreviousQuery !== "") {
+        this.getWeatherDataFromAPI({
+          type: "url",
+          data: this.getPreviousQuery,
+        });
+      } else {
+        console.log("error: no query saved");
+        // ! TODO tooltip popover thing saying nothing to refresh
+      }
+    },
   },
 
   mounted() {
@@ -466,6 +473,12 @@ input[type="text"] {
   width: 300px;
   border: 3px solid white;
   border-radius: 3px;
+}
+
+.location-image {
+  width: 29px;
+  height: 29px;
+  fill: white;
 }
 
 .container-main {
