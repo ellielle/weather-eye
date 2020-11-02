@@ -1,6 +1,6 @@
 <template>
   <div class="container-daily-forecast">
-    <p class="container-header">Forecast for {{}}</p>
+    <p class="container-header">Daily Forecast</p>
     <img class="icon" :src="forecast.icon" alt="Weather Icon" />
     <div class="temp-high">
       High: {{ Math.round(Number(forecast.temp_high))
@@ -10,7 +10,7 @@
       Low: {{ Math.round(Number(forecast.temp_low))
       }}{{ this.getWeatherUnits.temp }}
     </div>
-    <div class="humidity" v-if="forecast.humidity">{{ forecast.humidity }}</div>
+    <!-- <div class="humidity" v-if="forecast.humidity">{{ forecast.humidity }}</div> -->
     <div class="description">{{ capitalizeDescription }}.</div>
     <div class="wind">
       Wind: {{ forecast.wind }}{{ this.getWeatherUnits.wind }}
@@ -49,6 +49,7 @@ export default {
 .container-header {
   color: orangered;
   grid-area: row / col / row / col 3;
+  font-size: 15px;
 }
 
 .icon {
@@ -92,7 +93,7 @@ export default {
   grid-area: row 3 / col 2 / row 4 / col 3;
 }
 
-.humidity {
-  grid-area: row 3 / col / row 4 / col;
-}
+// .humidity {
+//   grid-area: row 3 / col / row 4 / col;
+// }
 </style>

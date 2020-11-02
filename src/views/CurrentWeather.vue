@@ -58,6 +58,7 @@ p {
   color: orangered;
   grid-area: row / col / row / col 3;
   align-self: end;
+  font-size: 15px;
 }
 
 .city-name {

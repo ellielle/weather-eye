@@ -22,6 +22,7 @@
         <input
           type="text"
           placeholder="ZIP Code or City & Country code"
+          class="weather-input"
           v-model="userInput"
           aria-label="City Search"
           @keydown.enter="searchByInput"
@@ -89,7 +90,11 @@ export default {
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
   // ? TODO style the search bar
   // TODO set up auto weather search in mounted() if user coords exist
+  // TODO animation for location button
   // ? TODO make sure to pull saved currentCity from store ?
+  // ? TODO have a landing page letting user know why is blank?
+  // TODO probably need to set the amount of rows for weekly forecast to be fluid and
+  // TODO try to prevent the daily and current forecasts from expanding beyond the first 2 rows
 
   data() {
     return {
@@ -454,6 +459,10 @@ export default {
       }
     },
 
+    focusSearchBar() {
+      document.querySelector(".weather-input").focus();
+    },
+
     saveUserLocation(userLat, userLon) {
       try {
         localStorage.setItem(
@@ -490,12 +499,23 @@ export default {
       }
     },
 
-    getLocationWeather() {},
+    getLocationWeather() {
+      if (
+        this.getUserCoordinates.lat !== null &&
+        this.getUserCoordinates.lon !== null
+      ) {
+        this.getWeatherDataFromAPI({
+          type: "coords",
+        });
+      }
+    },
   },
 
   mounted() {
     this.getStoredUserOptions();
     this.setSelectedOption(this.getUserOptions.units);
+    this.getLocationWeather();
+    this.focusSearchBar();
   },
 };
 </script>
@@ -508,6 +528,9 @@ input[type="text"] {
   width: 300px;
   border: 3px solid white;
   border-radius: 3px;
+  &:focus {
+    outline: none;
+  }
 }
 
 .container-main {
