@@ -410,7 +410,7 @@ export default {
     getFormattedDateTime() {
       const baseDateTime = new Date(Date.now());
       let baseHours = baseDateTime.getHours();
-      const baseMinutes = baseDateTime.getMinutes();
+      const baseMinutes = Number(String(baseDateTime.getMinutes()).padStart(2, "0"));
       const baseDay = baseDateTime.getDate();
       let isMorning = true;
       const months = [
@@ -484,7 +484,7 @@ input[type="text"] {
 .current-weather,
 .daily-forecast,
 .weekly-forecast {
-  padding: 15px 0 0 0;
+  padding: 0;
   background-color: var(--sub-background);
   border: var(--main-border);
 }

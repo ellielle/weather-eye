@@ -7,14 +7,14 @@
       {{ Math.round(Number(currentWeather.temp))
       }}{{ this.getWeatherUnits.temp }}
     </p>
-    <div class="humidity">{{ currentWeather.humidity }}%</div>
+    <div class="humidity">Humidity: {{ currentWeather.humidity }}%</div>
     <div class="feels-like">
-      {{ Math.round(Number(currentWeather.feels_like))
-      }}{{ this.getWeatherUnits.temp }}
+      Feels like {{ Math.round(Number(currentWeather.feels_like))
+      }}{{ this.getWeatherUnits.temp }}.
     </div>
-    <div class="description">{{ currentWeather.description }}</div>
+    <div class="description">{{ capitalizeDescription }}.</div>
     <div class="wind">
-      {{ currentWeather.wind }}{{ this.getWeatherUnits.wind }}
+      Wind: {{ currentWeather.wind }}{{ this.getWeatherUnits.wind }}
     </div>
   </div>
 </template>
@@ -35,6 +35,12 @@ export default {
     getCityOrCoords() {
       return this.getCurrentCity || "Current Weather:";
     },
+    capitalizeDescription() {
+      return (
+        this.currentWeather.description.charAt(0).toUpperCase() +
+        this.currentWeather.description.slice(1)
+      );
+    },
   },
 };
 </script>
@@ -43,44 +49,64 @@ p {
   margin: 0;
 }
 
+img {
+  height: 70px;
+  width: 70px;
+}
+
 .container-current-weather {
   display: grid;
-  grid: 1fr 1fr 2fr 1fr 1fr / 1fr;
+  grid: repeat(auto-fill, [row] minmax(50px, 1fr)) / repeat(2, [col] 1fr);
 }
 
 .date-time {
   color: orangered;
-  grid-area: 1 / 1 / 1 / 1;
+  grid-area: row / col / row / col 3;
+  align-self: end;
 }
 
 .city-name {
   font-size: 25px;
   font-weight: 500;
-  grid-area: 2 / 1 / 2 / 1;
+  grid-area: row 2 / col / row 3 / col 3;
 }
 
 .icon {
-  grid-area: 3 / 1 / 3 / 1;
+  grid-area: row 3 / col / row 4 / col 2;
+  justify-self: right;
+  margin-top: -25px;  
 }
 
 .current-temp {
-  grid-area: 3 / 1 / 3 / 1;
+  grid-area: row 3 / col 2 / row 4 / col 3;
+  justify-self: start;
+}
+
+.feels-like,
+.humidity {
+  justify-self: right;
+  margin-right: 3px;
+}
+
+.description,
+.wind {
+  justify-self: left;
+  margin-left: 3px;
 }
 
 .feels-like {
-  
-  grid-area: 4 / 1 / 4 / 1;
+  grid-area: row 4 / col / row 5 / col 2;
 }
 
 .description {
-  grid-area: 4 / 1 / 4 / 1;
+  grid-area: row 4 / col 2 / row 5 / col 3;
 }
 
-.himidity {
-  grid-area: 5 / 1 / 5 / 1;
+.humidity {
+  grid-area: row 5 / col / row 6 / col;
 }
 
 .wind {
-  grid-area: 5 / 1 / 5 / 1;
+  grid-area: row 5 / col 2 / row 6 / col 3;
 }
 </style>
