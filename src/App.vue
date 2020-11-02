@@ -14,6 +14,11 @@ export default {
 <style lang="scss">
 @import "./src/assets/_variables";
 
+img {
+  height: 70px;
+  width: 70px;
+}
+
 body {
   margin: 0;
 }

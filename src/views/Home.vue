@@ -30,7 +30,7 @@
       </button>
     </div>
     <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
-    <div class="container-components">
+    <div class="container-components" :style="weeklyForecastAvailable ? weatherStyles.weekly : weatherStyles.noWeekly">
       <current-weather
         class="current-weather"
         v-if="currentWeatherAvailable"
@@ -77,6 +77,10 @@ export default {
       geoDataAvailable: false,
       errorMessage: "",
       searchType: "",
+      weatherStyles: {
+        weekly: "grid-template-columns: 1fr 1fr repeat(2, [col] minmax(100px, 3fr)) 1fr 1fr;",
+        noWeekly: "grid-template-columns: 1fr 1fr repeat(1, [col] minmax(100px, 3fr)) 1fr 1fr;"
+      }
     };
   },
 
@@ -410,7 +414,7 @@ export default {
     getFormattedDateTime() {
       const baseDateTime = new Date(Date.now());
       let baseHours = baseDateTime.getHours();
-      const baseMinutes = Number(String(baseDateTime.getMinutes()).padStart(2, "0"));
+      const baseMinutes = String(baseDateTime.getMinutes()).padStart(2, "0");
       const baseDay = baseDateTime.getDate();
       let isMorning = true;
       const months = [
@@ -463,7 +467,8 @@ input[type="text"] {
 .container-components {
   padding-top: 5px;
   display: grid;
-  grid: 1fr 1fr / 1fr 1fr 2fr 2fr 1fr;
+  grid-template-rows: fit-content repeat(2, [row] minmax(100px, 1fr));
+  grid-template-columns: 1fr 1fr repeat(2, [col] minmax(100px, 3fr)) 1fr 1fr;
   grid-gap: 5px;
   // TODO will need to be dynamic grid to account for components not being rendered if no data for them
   // ! text-align: center in #app may need to be removed and formatted around
@@ -484,7 +489,6 @@ input[type="text"] {
 .current-weather,
 .daily-forecast,
 .weekly-forecast {
-  padding: 0;
   background-color: var(--sub-background);
   border: var(--main-border);
 }

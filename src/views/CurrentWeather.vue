@@ -49,14 +49,9 @@ p {
   margin: 0;
 }
 
-img {
-  height: 70px;
-  width: 70px;
-}
-
 .container-current-weather {
   display: grid;
-  grid: repeat(auto-fill, [row] minmax(50px, 1fr)) / repeat(2, [col] 1fr);
+  grid: repeat(5, [row] minmax(60px, 1fr)) / repeat(2, [col] 1fr);
 }
 
 .date-time {
@@ -72,7 +67,7 @@ img {
 }
 
 .icon {
-  grid-area: row 3 / col / row 4 / col 2;
+  grid-area: row 3 / col / row 4 / col;
   justify-self: right;
   margin-top: -25px;  
 }
