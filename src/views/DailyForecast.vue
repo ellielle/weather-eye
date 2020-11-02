@@ -50,21 +50,28 @@ export default {
 }
 
 .icon {
-  grid-area: row 2 / col / row 3 / col;
+  grid-area: row / col / row / col 2;
   justify-self: center;
-  margin: -25px 0 0 -70px;
+  margin-right: -50%;
+}
+
+.temp-high,
+.description,
+.temp-low,
+.wind {
+  align-self: center;
 }
 
 .temp-high,
 .description {
   justify-self: right;
-  margin-right: 3px;
+  margin-right: 2%;
 }
 
 .temp-low,
 .wind {
   justify-self: left;
-  margin-left: 3px;
+  margin-left: 2%;
 }
 
 .temp-high {

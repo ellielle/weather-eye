@@ -30,7 +30,12 @@
       </button>
     </div>
     <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
-    <div class="container-components" :style="weeklyForecastAvailable ? weatherStyles.weekly : weatherStyles.noWeekly">
+    <div
+      class="container-components"
+      :style="
+        weeklyForecastAvailable ? weatherStyles.weekly : weatherStyles.noWeekly
+      "
+    >
       <current-weather
         class="current-weather"
         v-if="currentWeatherAvailable"
@@ -64,6 +69,7 @@ export default {
     DailyForecast,
   },
 
+  // TODO consider redoing weather displays so that margins aren't required. Make parent divs for each grouped set of data
   // TODO use parsed data and build out components now
   // TODO refresh weather button
   // TODO throw up error message if query comes back invalid
@@ -78,9 +84,11 @@ export default {
       errorMessage: "",
       searchType: "",
       weatherStyles: {
-        weekly: "grid-template-columns: 1fr 1fr repeat(2, [col] minmax(100px, 3fr)) 1fr 1fr;",
-        noWeekly: "grid-template-columns: 1fr 1fr repeat(1, [col] minmax(100px, 3fr)) 1fr 1fr;"
-      }
+        weekly:
+          "grid-template-columns: repeat(2, 1fr) [col] minmax(100px, 3fr) repeat(2, 1fr);",
+        noWeekly:
+          "grid-template-columns: repeat(2, 1fr) [col] minmax(100px, 3fr) repeat(2, 1fr);",
+      },
     };
   },
 

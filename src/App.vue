@@ -15,8 +15,8 @@ export default {
 @import "./src/assets/_variables";
 
 img {
-  height: 70px;
-  width: 70px;
+  height: 50px;
+  width: 50px;
 }
 
 body {

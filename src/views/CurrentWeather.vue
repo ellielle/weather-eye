@@ -51,7 +51,7 @@ p {
 
 .container-current-weather {
   display: grid;
-  grid: repeat(5, [row] minmax(60px, 1fr)) / repeat(2, [col] 1fr);
+  grid: repeat(5, [row] minmax(50px, 1fr)) / repeat(2, [col] 1fr);
 }
 
 .date-time {
@@ -66,10 +66,13 @@ p {
   grid-area: row 2 / col / row 3 / col 3;
 }
 
+.icon, .current-temp, .feels-like, .humidity, .description, .wind {
+  align-self: center;
+}
+
 .icon {
   grid-area: row 3 / col / row 4 / col;
-  justify-self: right;
-  margin-top: -25px;  
+  justify-self: right; 
 }
 
 .current-temp {
@@ -80,13 +83,13 @@ p {
 .feels-like,
 .humidity {
   justify-self: right;
-  margin-right: 3px;
+  margin-right: 2%;
 }
 
 .description,
 .wind {
   justify-self: left;
-  margin-left: 3px;
+  margin-left: 2%;
 }
 
 .feels-like {
