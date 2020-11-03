@@ -199,6 +199,7 @@ export default {
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
+        console.log("WD: ", data);
         this.setCurrentDateTime(this.getFormattedDateTime());
         this.setWeatherData(data);
         this.parseWeatherData();
@@ -251,6 +252,7 @@ export default {
     },
 
     parseWeatherData() {
+      this.setCurrentCity(null);
       if (this.searchType === "url") {
         this.getPreviousSearchType();
       }
@@ -262,7 +264,6 @@ export default {
     getPreviousSearchType() {
       const previousQuery = this.getPreviousQuery;
       if (previousQuery.match(/onecall?/)) {
-        console.log("onecall");
         return "coords";
       } else if (previousQuery.match(/weather?zip/)) {
         return "zip";
@@ -285,6 +286,10 @@ export default {
           description: this.getWeatherData.current.weather[0].description,
           wind: this.getWeatherData.current.wind_speed,
           icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
+          coords: {
+            lat: this.getWeatherData.lat,
+            lon: this.getWeatherData.lon,
+          },
         });
       } else if (
         this.searchType === "zip" ||
@@ -297,6 +302,7 @@ export default {
           description: this.getWeatherData.weather[0].description,
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
+          coords: this.getWeatherData.coord,
         });
       }
     },
@@ -307,10 +313,6 @@ export default {
           temp_high: this.getWeatherData.daily[0].temp.max,
           temp_low: this.getWeatherData.daily[0].temp.min,
           humidity: this.getWeatherData.daily[0].humidity,
-          coords: {
-            lat: this.getWeatherData.lat,
-            lon: this.getWeatherData.lon,
-          },
           description: this.getWeatherData.daily[0].weather[0].description,
           wind: this.getWeatherData.daily[0].wind_speed,
           icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
@@ -323,7 +325,6 @@ export default {
           temp_high: this.getWeatherData.main.temp_max,
           temp_low: this.getWeatherData.main.temp_min,
           humidity: null,
-          coords: this.getWeatherData.coord,
           description: this.getWeatherData.weather[0].description,
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
@@ -434,7 +435,6 @@ export default {
         "Dec",
       ];
       const baseMonth = months[baseDateTime.getMonth()];
-      console.log(baseHours);
       if (baseHours > 12) {
         baseHours -= 12;
         isMorning = false;

@@ -28,7 +28,6 @@ export default {
       type: Object,
       required: true,
     },
-    geolocatedCity: null,
   },
 
   computed: {
@@ -40,6 +39,7 @@ export default {
       "getLocationIQAPIEndpoint",
     ]),
     getCityOrCoords() {
+      console.log(this.getCurrentCity);
       return this.getCurrentCity || this.getCityWithCoords();
     },
     capitalizeDescription() {
@@ -54,14 +54,14 @@ export default {
     ...mapActions(["setCurrentCity"]),
     async getCityWithCoords() {
       if (
-        this.getUserCoordinates.lat !== null &&
-        this.getUserCoordinates.lon !== null
+        this.currentWeather.coords.lat !== null &&
+        this.currentWeather.coords.lon !== null
       ) {
         try {
-          const fullAPIURL = `${this.getLocationIQAPIEndpoint}?key=${process.env.VUE_APP_LOCATION_IQ_API_KEY}&lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&format=json`;
+          const fullAPIURL = `${this.getLocationIQAPIEndpoint}?key=${process.env.VUE_APP_LOCATION_IQ_API_KEY}&lat=${this.currentWeather.coords.lat}&lon=${this.currentWeather.coords.lon}&format=json`;
           const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
           const data = await response.json();
-          console.log(data.address);
+          if (data.address.state) {}
           this.setCurrentCity(`${data.address.city}, ${data.address.state}`)
         } catch (error) {
           this.setCurrentCity(null);
