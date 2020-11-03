@@ -83,6 +83,7 @@ export default {
     DailyForecast,
   },
 
+  // ! TODO weekly data styles properly now, need a button to unset the coords for testing
   // TODO use parsed data and build out components now
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions (current and daily should slide in from left, weekly from right)
@@ -104,7 +105,7 @@ export default {
       searchType: "",
       weatherStyles: {
         weekly:
-          "grid-template-columns: repeat(2, 1fr) [col] minmax(100px, 3fr) repeat(2, 1fr);",
+          "grid-template-columns: repeat(2, 1fr) repeat(2, [col] minmax(100px, 3fr)) repeat(2, 1fr);",
         noWeekly:
           "grid-template-columns: repeat(2, 1fr) [col] minmax(100px, 3fr) repeat(2, 1fr);",
       },
@@ -130,7 +131,7 @@ export default {
       return Object.keys(this.getDailyForecastData).length > 0;
     },
     weeklyForecastAvailable() {
-      return Object.keys(this.getWeeklyForecastData).length > 0;
+      return this.geoDataAvailable;
     },
     isUserLocationSet() {
       return (
@@ -297,11 +298,6 @@ export default {
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
         });
-        if (!!this.getWeatherData.name) {
-          this.setCurrentCity(
-            `${this.getWeatherData.name}, ${this.getWeatherData.sys.country}`
-          );
-        }
       }
     },
 
@@ -438,9 +434,12 @@ export default {
         "Dec",
       ];
       const baseMonth = months[baseDateTime.getMonth()];
+      console.log(baseHours);
       if (baseHours > 12) {
         baseHours -= 12;
         isMorning = false;
+      } else if (baseHours === 0) {
+        baseHours = 12;
       }
       return `${baseHours}:${baseMinutes}${
         isMorning ? "am" : "pm"
@@ -507,6 +506,7 @@ export default {
         this.getWeatherDataFromAPI({
           type: "coords",
         });
+        this.geoDataAvailable = true;
       }
     },
   },

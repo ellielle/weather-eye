@@ -19,7 +19,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "CurrentWeather",
 
@@ -28,18 +28,45 @@ export default {
       type: Object,
       required: true,
     },
+    geolocatedCity: null,
   },
 
   computed: {
-    ...mapGetters(["getWeatherUnits", "getCurrentDateTime", "getCurrentCity"]),
+    ...mapGetters([
+      "getWeatherUnits",
+      "getCurrentDateTime",
+      "getCurrentCity",
+      "getUserCoordinates",
+      "getLocationIQAPIEndpoint",
+    ]),
     getCityOrCoords() {
-      return this.getCurrentCity || "Current Weather:";
+      return this.getCurrentCity || this.getCityWithCoords();
     },
     capitalizeDescription() {
       return (
         this.currentWeather.description.charAt(0).toUpperCase() +
         this.currentWeather.description.slice(1)
       );
+    },
+  },
+
+  methods: {
+    ...mapActions(["setCurrentCity"]),
+    async getCityWithCoords() {
+      if (
+        this.getUserCoordinates.lat !== null &&
+        this.getUserCoordinates.lon !== null
+      ) {
+        try {
+          const fullAPIURL = `${this.getLocationIQAPIEndpoint}?key=${process.env.VUE_APP_LOCATION_IQ_API_KEY}&lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&format=json`;
+          const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
+          const data = await response.json();
+          console.log(data.address);
+          this.setCurrentCity(`${data.address.city}, ${data.address.state}`)
+        } catch (error) {
+          this.setCurrentCity(null);
+        }
+      }
     },
   },
 };

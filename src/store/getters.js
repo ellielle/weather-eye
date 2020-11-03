@@ -5,6 +5,9 @@ export default {
   getGiphyAPIEndpoint(state) {
     return state.giphyAPIEndpoint;
   },
+  getLocationIQAPIEndpoint(state) {
+    return state.locationIQAPIEndpoint;
+  },
   getUserCoordinates(state) {
     return state.userCoordinates;
   },

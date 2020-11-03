@@ -55,7 +55,7 @@ export default {
 .icon {
   grid-area: row / col / row / col 2;
   justify-self: center;
-  margin-right: -50%;
+  margin-right: -45%;
 }
 
 .temp-high,
