@@ -83,19 +83,14 @@ export default {
     DailyForecast,
   },
 
-  // ! TODO weekly data styles properly now, need a button to unset the coords for testing
-  // TODO use parsed data and build out components now
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions (current and daily should slide in from left, weekly from right)
-  // TODO get and set current location
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
-  // ? TODO style the search bar
-  // TODO set up auto weather search in mounted() if user coords exist
   // TODO animation for location button
-  // ? TODO make sure to pull saved currentCity from store ?
-  // ? TODO have a landing page letting user know why is blank?
   // TODO probably need to set the amount of rows for weekly forecast to be fluid and
   // TODO try to prevent the daily and current forecasts from expanding beyond the first 2 rows
+  // TODO add page blocking access if localStorage isn't available
+  // ? TODO have a landing page letting user know why is blank?
 
   data() {
     return {
@@ -123,6 +118,7 @@ export default {
       "getDailyForecastData",
       "getWeeklyForecastData",
       "getPreviousQuery",
+      "getCurrentCity"
     ]),
     currentWeatherAvailable() {
       return Object.keys(this.getCurrentWeatherData).length > 0;
@@ -199,7 +195,6 @@ export default {
       try {
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
-        console.log("WD: ", data);
         this.setCurrentDateTime(this.getFormattedDateTime());
         this.setWeatherData(data);
         this.parseWeatherData();
@@ -471,6 +466,7 @@ export default {
             lon: userLon,
           })
         );
+        localStorage.setItem("city", JSON.stringify(this.getCurrentCity));
       } catch (error) {
         console.log(error);
       }

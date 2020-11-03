@@ -39,8 +39,7 @@ export default {
       "getLocationIQAPIEndpoint",
     ]),
     getCityOrCoords() {
-      console.log(this.getCurrentCity);
-      return this.getCurrentCity || this.getCityWithCoords();
+      return this.getCurrentCity || this.loadCityFromStorage();
     },
     capitalizeDescription() {
       return (
@@ -48,6 +47,10 @@ export default {
         this.currentWeather.description.slice(1)
       );
     },
+  },
+
+  watch: {
+    currentWeather: "getCityWithCoords"
   },
 
   methods: {
@@ -68,6 +71,10 @@ export default {
         }
       }
     },
+
+    loadCityFromStorage() {
+      return JSON.parse(localStorage.getItem("city"));
+    }
   },
 };
 </script>
