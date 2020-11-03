@@ -60,11 +60,12 @@
         v-if="dailyForecastAvailable"
         :forecast="getDailyForecastData"
       ></daily-forecast>
-      <!-- <weekly-forecast
-      class="weekly-forecast"
-      v-if="weeklyForecastAvailable"
-      :weekly-forecast="getWeeklyForecastData"
-    ></weekly-forecast> -->
+      <weekly-forecast
+        class="weekly-forecast"
+        v-if="weeklyForecastAvailable"
+        :weekly-forecast="getWeeklyForecastData"
+        :key="getWeeklyForecastData[0].temp_high"
+      ></weekly-forecast>
     </div>
   </div>
 </template>
@@ -83,6 +84,8 @@ export default {
     DailyForecast,
   },
 
+  // TODO refactor refresh to force a position-based query?
+  // TODO change location icon to get location button, a different button icon for its current functionality
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions (current and daily should slide in from left, weekly from right)
   // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
@@ -91,6 +94,10 @@ export default {
   // TODO try to prevent the daily and current forecasts from expanding beyond the first 2 rows
   // TODO add page blocking access if localStorage isn't available
   // ? TODO have a landing page letting user know why is blank?
+  // ! TODO tooltip popover thing saying nothing to refresh in refreshWeather()
+  
+  // ! TODO the issue with the names not changing is in CurrentWeather.vue
+  // ! it's pulling the saved location from localStorage
 
   data() {
     return {
@@ -118,7 +125,7 @@ export default {
       "getDailyForecastData",
       "getWeeklyForecastData",
       "getPreviousQuery",
-      "getCurrentCity"
+      "getCurrentCity",
     ]),
     currentWeatherAvailable() {
       return Object.keys(this.getCurrentWeatherData).length > 0;
@@ -127,7 +134,7 @@ export default {
       return Object.keys(this.getDailyForecastData).length > 0;
     },
     weeklyForecastAvailable() {
-      return this.geoDataAvailable;
+      return this.getWeeklyForecastData.length > 0;
     },
     isUserLocationSet() {
       return (
@@ -174,7 +181,6 @@ export default {
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
       let fullAPIURL = ``;
-
       switch (args.type) {
         case "coords":
           fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
@@ -189,10 +195,12 @@ export default {
           fullAPIURL = args.data;
           break;
       }
+      // Ensures a type was sent, otherwise it falls back to the previous query's type
       this.searchType =
         args.type !== "url" ? args.type : this.getPreviousSearchType();
       this.setPreviousQuery(fullAPIURL);
       try {
+        console.log(fullAPIURL);
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
         this.setCurrentDateTime(this.getFormattedDateTime());
@@ -228,10 +236,9 @@ export default {
 
     searchByInput() {
       this.userInput = this.userInput.replace(/[\s]?[,][\s]+/, ",");
+      this.setWeeklyForecast([]);
       if (this.userInput.match(/\d{5}/)) {
         this.getWeatherDataFromAPI({ type: "zip", data: this.userInput });
-
-        // TODO come back here after refactoring the auto coordinates and state
       } else if (
         this.userInput.match(
           /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*(?:[,])+(?:\s)*(?:[a-zA-Z]){2}$/
@@ -247,9 +254,8 @@ export default {
     },
 
     parseWeatherData() {
-      this.setCurrentCity(null);
       if (this.searchType === "url") {
-        this.getPreviousSearchType();
+        this.searchType = this.getPreviousSearchType();
       }
       this.parseDailyForecast();
       this.parseCurrentWeather();
@@ -328,7 +334,7 @@ export default {
     },
 
     parseWeeklyForecast() {
-      const weeklyForecast = [];
+      let weeklyForecast = [];
       if (this.searchType === "coords") {
         this.getWeatherData.daily.forEach((forecast) => {
           weeklyForecast.push({
@@ -342,7 +348,10 @@ export default {
         });
       }
       if (weeklyForecast.length > 0) {
+        // Remove current day's data
+        weeklyForecast.shift();
         this.setWeeklyForecast(weeklyForecast);
+        console.log(weeklyForecast.length);
       }
     },
 
@@ -376,14 +385,13 @@ export default {
         unitChanged = true;
       }
       if (unitChanged) {
-        const currentCity = this.getUserOptions.cityName;
-        this.setUserOptions({ units: newUnit, cityName: currentCity });
+        this.setUserOptions({ units: newUnit });
         localStorage.setItem("units", newUnit);
       }
+      // ! TODO run query again with new units
     },
 
     getStoredUserOptions() {
-      const currentCity = this.getUserOptions.cityName || null;
       if (!this.isLocationSavedInStorage()) {
         if (!this.getGeoLocationData()) {
           this.geoDataAvailable = false;
@@ -395,11 +403,10 @@ export default {
       }
       if (!localStorage.getItem("units")) {
         localStorage.setItem("units", "imperial");
-        this.setUserOptions({ units: "imperial", cityName: currentCity });
+        this.setUserOptions({ units: "imperial" });
       } else {
         this.setUserOptions({
           units: localStorage.getItem("units"),
-          cityName: currentCity,
         });
       }
     },
@@ -449,7 +456,6 @@ export default {
         });
       } else {
         console.log("error: no query saved");
-        // ! TODO tooltip popover thing saying nothing to refresh
       }
     },
 
@@ -538,11 +544,9 @@ input[type="text"] {
 .container-components {
   padding-top: 5px;
   display: grid;
-  grid-template-rows: fit-content repeat(2, minmax(100px, 1fr));
+  grid-template-rows: fit-content repeat(3, minmax(100px, 1fr));
   grid-template-columns: 1fr 1fr repeat(2, minmax(100px, 3fr)) 1fr 1fr;
   grid-gap: 5px;
-  // TODO will need to be dynamic grid to account for components not being rendered if no data for them
-  // ! text-align: center in #app may need to be removed and formatted around
 }
 
 .current-weather,
@@ -561,7 +565,7 @@ input[type="text"] {
 }
 
 .weekly-forecast {
-  grid-area: 1 / 4 / 3 / 5;
+  grid-area: 1 / 4 / 4 / 5;
 }
 
 // Search Bar

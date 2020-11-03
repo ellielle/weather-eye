@@ -4,13 +4,13 @@ export default {
   locationIQAPIEndpoint: "https://us1.locationiq.com/v1/reverse.php",
   previousQuery: "",
   userCoordinates: { lat: null, lon: null },
-  userOptions: { units: null, cityName: null },
+  userOptions: { units: null },
   weatherData: {},
   currentWeather: {},
   currentCity: null,
   currentDateTime: null,
   dailyForecast: {},
-  weeklyForecast: {},
+  weeklyForecast: [],
   availableWeatherUnits: {
     metric: {
       temp: "°C",

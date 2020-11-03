@@ -2,7 +2,7 @@
   <div class="container-current-weather">
     <p class="date-time">{{ getCurrentDateTime }}</p>
     <p class="city-name">{{ getCityOrCoords }}</p>
-    <img class="icon" :src="currentWeather.icon" alt="Weather Icon" />
+    <img class="icon" :src="currentWeather.icon" alt="Weather Icon" crossorigin="anonymous" />
     <p class="current-temp">
       {{ Math.round(Number(currentWeather.temp))
       }}{{ this.getWeatherUnits.temp }}
