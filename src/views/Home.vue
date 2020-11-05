@@ -95,9 +95,9 @@ export default {
   // TODO add page blocking access if localStorage isn't available
   // ? TODO have a landing page letting user know why is blank?
   // ! TODO tooltip popover thing saying nothing to refresh in refreshWeather()
-  
-  // ! TODO the issue with the names not changing is in CurrentWeather.vue
-  // ! it's pulling the saved location from localStorage
+
+  // ? TODO the issue with the names not changing is in CurrentWeather.vue
+  //  it's pulling the saved location from localStorage
 
   data() {
     return {
@@ -284,7 +284,7 @@ export default {
           temp: this.getWeatherData.current.temp,
           humidity: this.getWeatherData.current.humidity,
           feels_like: this.getWeatherData.current.feels_like,
-          description: this.getWeatherData.current.weather[0].description,
+          description: this.capitalizeDescription(this.getWeatherData.current.weather[0].description),
           wind: this.getWeatherData.current.wind_speed,
           icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
           coords: {
@@ -300,7 +300,7 @@ export default {
           temp: this.getWeatherData.main.temp,
           humidity: this.getWeatherData.main.humidity,
           feels_like: this.getWeatherData.main.feels_like,
-          description: this.getWeatherData.weather[0].description,
+          description: this.capitalizeDescription(this.getWeatherData.weather[0].description),
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
           coords: this.getWeatherData.coord,
@@ -314,7 +314,7 @@ export default {
           temp_high: this.getWeatherData.daily[0].temp.max,
           temp_low: this.getWeatherData.daily[0].temp.min,
           humidity: this.getWeatherData.daily[0].humidity,
-          description: this.getWeatherData.daily[0].weather[0].description,
+          description: this.capitalizeDescription(this.getWeatherData.daily[0].weather[0].description),
           wind: this.getWeatherData.daily[0].wind_speed,
           icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
         });
@@ -326,7 +326,7 @@ export default {
           temp_high: this.getWeatherData.main.temp_max,
           temp_low: this.getWeatherData.main.temp_min,
           humidity: null,
-          description: this.getWeatherData.weather[0].description,
+          description: this.capitalizeDescription(this.getWeatherData.weather[0].description),
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
         });
@@ -341,7 +341,7 @@ export default {
             temp_high: forecast.temp.max,
             temp_low: forecast.temp.min,
             humidity: forecast.humidity,
-            description: forecast.weather[0].description,
+            description: this.capitalizeDescription(forecast.weather[0].description),
             wind: forecast.wind_speed,
             icon: this.getIconURL(forecast.weather[0].icon),
           });
@@ -510,6 +510,10 @@ export default {
         });
         this.geoDataAvailable = true;
       }
+    },
+
+    capitalizeDescription(description) {
+      return description.charAt(0).toUpperCase() + description.slice(1);
     },
   },
 

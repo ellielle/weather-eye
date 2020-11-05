@@ -1,27 +1,22 @@
 <template>
   <div class="container-weekly-forecast">
-    <h6>WEEKLY FORECAST</h6>
+    <p class="weekly-forecast-text">Weekly Forecast</p>
     <div>
-      <div v-for="day in weeklyForecast" :key="day.dt">
-        <img
-          class="icon"
-          :src="day.icon"
-          alt="Weather Icon"
-          crossorigin="anonymous"
-        />
-        <div class="temp-high">{{ Math.round(Number(day.temp_high)) }}</div>
-        <div class="temp-low">{{ Math.round(Number(day.temp_low)) }}</div>
-        <div class="humidity">{{ day.humidity }}</div>
-        <div class="description">{{ day.description }}</div>
-        <div class="wind">{{ day.wind }}</div>
+      <div v-for="(day, index) in weeklyForecast" :key="day.dt">
+        <weekly-forecast-tabs :forecastedDay="day" :dayOfWeek="days[index]"></weekly-forecast-tabs>
       </div>
     </div>
   </div>
 </template>
 <script>
+import WeeklyForecastTabs from "../components/WeeklyForecastTabs";
 import { mapGetters } from "vuex";
 export default {
   name: "WeeklyForecast",
+
+  components: {
+    WeeklyForecastTabs
+  },
 
   props: {
     weeklyForecast: {
@@ -29,8 +24,6 @@ export default {
       required: true,
     },
   },
-
-  // ! TODO set up collapsable tabs for each day, collapsed text should be weekday, high(?) and icon
 
   data() {
     return {
@@ -65,4 +58,12 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+p {
+  margin: inherit 0 0 0;
+}
+
+.weekly-forecast-text {
+  color: orangered;
+  font-size: 15px;
+}
 </style>

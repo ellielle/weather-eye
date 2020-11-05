@@ -10,7 +10,7 @@
       Low: {{ Math.round(Number(forecast.temp_low))
       }}{{ this.getWeatherUnits.temp }}
     </div>
-    <div class="description">{{ capitalizeDescription }}.</div>
+    <div class="description">{{ this.forecast.description }}.</div>
     <div class="wind">
       Wind: {{ forecast.wind }}{{ this.getWeatherUnits.wind }}
     </div>
@@ -30,12 +30,6 @@ export default {
 
   computed: {
     ...mapGetters(["getWeatherUnits"]),
-    capitalizeDescription() {
-      return (
-        this.forecast.description.charAt(0).toUpperCase() +
-        this.forecast.description.slice(1)
-      );
-    },
   },
 };
 </script>

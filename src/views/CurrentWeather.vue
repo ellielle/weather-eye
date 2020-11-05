@@ -12,7 +12,7 @@
       Feels like {{ Math.round(Number(currentWeather.feels_like))
       }}{{ this.getWeatherUnits.temp }}.
     </div>
-    <div class="description">{{ capitalizeDescription }}.</div>
+    <div class="description">{{ currentWeather.description }}.</div>
     <div class="wind">
       Wind: {{ currentWeather.wind }}{{ this.getWeatherUnits.wind }}
     </div>
@@ -40,12 +40,6 @@ export default {
     ]),
     getCityOrCoords() {
       return this.getCurrentCity || this.loadCityFromStorage();
-    },
-    capitalizeDescription() {
-      return (
-        this.currentWeather.description.charAt(0).toUpperCase() +
-        this.currentWeather.description.slice(1)
-      );
     },
   },
 
