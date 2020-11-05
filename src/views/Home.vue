@@ -1,12 +1,11 @@
 <template>
   <div class="container-main">
-    <div class="error-display">
-      Make note for: ZIP Code or City & Country code OR link to find open
-      weather code via their search engine
+    <div class="error-display" v-if="errorMessage">
+      <p>{{ errorMessage }}</p>
     </div>
     <div class="search-bar">
       <svg
-        class="location-image"
+        class="get-location-image"
         xmlns="http://www.w3.org/2000/svg"
         height="29"
         viewBox="0 0 24 24"
@@ -15,7 +14,20 @@
       >
         <path d="M0 0h24v24H0z" fill="none" />
         <path
-          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+          d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm-1.56 10H9v-1.44l3.35-3.34 1.43 1.43L10.44 12zm4.45-4.45l-.7.7-1.44-1.44.7-.7c.15-.15.39-.15.54 0l.9.9c.15.15.15.39 0 .54z"
+        />
+      </svg>
+      <svg
+        class="search-location-image"
+        xmlns="http://www.w3.org/2000/svg"
+        height="29"
+        viewBox="0 0 24 24"
+        width="29"
+        @click="getWeatherForSavedLocation"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"
         />
       </svg>
       <div class="container-btn-search">
@@ -85,19 +97,19 @@ export default {
   },
 
   // TODO ? refactor refresh to force a position-based query?
-  // TODO change location icon to get location button, a different button icon for its current functionality
-  // TODO throw up error message if query comes back invalid
-  // TODO animations / transitions (current and daily should slide in from left, weekly from right)
-  // ? TODO ? weather doesn't change metric properly when using zip/city&state and toggle
-  // TODO animation for location button
-  // TODO probably need to set the amount of rows for weekly forecast to be fluid and
-  // TODO try to prevent the daily and current forecasts from expanding beyond the first 2 rows
-  // TODO add page blocking access if localStorage isn't available
-  // ? TODO have a landing page letting user know why is blank?
-  // ! TODO tooltip popover thing saying nothing to refresh in refreshWeather()
 
-  // ? TODO the issue with the names not changing is in CurrentWeather.vue
-  //  it's pulling the saved location from localStorage
+  // TODO change location icon to get location button, a different button icon for its current functionality
+  // ! have tooltip popup on location data save
+
+  // TODO throw up error message if query comes back invalid
+
+  // TODO animations / transitions (current and daily should slide in from left, weekly from right)
+  // TODO animation for location button
+
+  // TODO add page blocking access if localStorage isn't available
+  // ? have a landing page letting user know why is blank?
+
+  // ! tooltip popover thing saying nothing to refresh in refreshWeather()
 
   data() {
     return {
@@ -539,6 +551,8 @@ export default {
     capitalizeDescription(description) {
       return description.charAt(0).toUpperCase() + description.slice(1);
     },
+
+    getWeatherForSavedLocation() {},
   },
 
   mounted() {
@@ -554,9 +568,11 @@ export default {
 // Base Style
 input[type="text"] {
   font-size: 1rem;
+  background-color: var(--main-background);
   height: 20px;
   width: 300px;
-  border: 3px solid white;
+  border: 3px solid var(--main-background);
+  color: var(--text-color-primary);
   border-radius: 3px;
   &:focus {
     outline: none;
@@ -598,13 +614,27 @@ input[type="text"] {
 
 // Search Bar
 
-.location-image {
-  grid-column: col 2 / col 3;
-  justify-self: end;
+.get-location-image,
+.search-location-image {
   cursor: pointer;
   width: 29px;
   height: 29px;
-  fill: white;
+  fill: var(--text-color-primary);
+  transition: fill 0.15s ease-in;
+  &:hover {
+    fill: orangered;
+  }
+}
+
+.get-location-image {
+  grid-area: row / col 2 / row / col 2;
+  justify-self: end;
+  margin-right: 30px;
+}
+
+.search-location-image {
+  grid-area: row / col 2 / row / col 3;
+  justify-self: end;
 }
 
 .search-bar {
@@ -617,17 +647,17 @@ input[type="text"] {
 
 .container-btn-search {
   grid-column: col 3 / col 4;
+  align-self: center;
 }
 
 .btn-refresh,
 .btn-search {
   font-size: 1rem;
-  height: 30px;
+  height: 28px;
   width: 85px;
   border: 1px solid var(--main-background);
-  color: white;
+  color: var(--text-color-primary);
   background-color: var(--sub-background);
-  transition: all 0.5s;
   &:focus {
     outline: none;
   }
@@ -637,6 +667,7 @@ input[type="text"] {
 }
 
 .btn-refresh {
+  align-self: center;
   grid-column: col 5 / col 6;
   span {
     display: inline-block;
@@ -649,7 +680,13 @@ input[type="text"] {
 }
 
 .btn-search {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
   margin-left: -15px;
+  transition: color 0.1s;
+  &:hover {
+    color: white;
+  }
   &:hover span {
     padding-right: 10px;
   }
@@ -695,19 +732,18 @@ input[type="text"] {
 
 .btn-metric,
 .btn-imperial {
+  padding: 6px;
   transition: all 0.3s;
   &:hover {
-    color: white;
+    color: orangered;
   }
 }
 
 .btn-metric {
-  padding: 6px;
   margin-left: -5px;
 }
 
 .btn-imperial {
-  padding: 6px;
   margin-right: -5px;
 }
 
