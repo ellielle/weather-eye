@@ -84,7 +84,7 @@ export default {
     DailyForecast,
   },
 
-  // TODO refactor refresh to force a position-based query?
+  // TODO ? refactor refresh to force a position-based query?
   // TODO change location icon to get location button, a different button icon for its current functionality
   // TODO throw up error message if query comes back invalid
   // TODO animations / transitions (current and daily should slide in from left, weekly from right)
@@ -284,7 +284,9 @@ export default {
           temp: this.getWeatherData.current.temp,
           humidity: this.getWeatherData.current.humidity,
           feels_like: this.getWeatherData.current.feels_like,
-          description: this.capitalizeDescription(this.getWeatherData.current.weather[0].description),
+          description: this.capitalizeDescription(
+            this.getWeatherData.current.weather[0].description
+          ),
           wind: this.getWeatherData.current.wind_speed,
           icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
           coords: {
@@ -300,7 +302,9 @@ export default {
           temp: this.getWeatherData.main.temp,
           humidity: this.getWeatherData.main.humidity,
           feels_like: this.getWeatherData.main.feels_like,
-          description: this.capitalizeDescription(this.getWeatherData.weather[0].description),
+          description: this.capitalizeDescription(
+            this.getWeatherData.weather[0].description
+          ),
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
           coords: this.getWeatherData.coord,
@@ -314,7 +318,9 @@ export default {
           temp_high: this.getWeatherData.daily[0].temp.max,
           temp_low: this.getWeatherData.daily[0].temp.min,
           humidity: this.getWeatherData.daily[0].humidity,
-          description: this.capitalizeDescription(this.getWeatherData.daily[0].weather[0].description),
+          description: this.capitalizeDescription(
+            this.getWeatherData.daily[0].weather[0].description
+          ),
           wind: this.getWeatherData.daily[0].wind_speed,
           icon: this.getIconURL(this.getWeatherData.current.weather[0].icon),
         });
@@ -326,7 +332,9 @@ export default {
           temp_high: this.getWeatherData.main.temp_max,
           temp_low: this.getWeatherData.main.temp_min,
           humidity: null,
-          description: this.capitalizeDescription(this.getWeatherData.weather[0].description),
+          description: this.capitalizeDescription(
+            this.getWeatherData.weather[0].description
+          ),
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
         });
@@ -341,7 +349,9 @@ export default {
             temp_high: forecast.temp.max,
             temp_low: forecast.temp.min,
             humidity: forecast.humidity,
-            description: this.capitalizeDescription(forecast.weather[0].description),
+            description: this.capitalizeDescription(
+              forecast.weather[0].description
+            ),
             wind: forecast.wind_speed,
             icon: this.getIconURL(forecast.weather[0].icon),
           });
@@ -387,8 +397,8 @@ export default {
       if (unitChanged) {
         this.setUserOptions({ units: newUnit });
         localStorage.setItem("units", newUnit);
+        this.refreshWeatherNewUnits();
       }
-      // ! TODO run query again with new units
     },
 
     getStoredUserOptions() {
@@ -453,6 +463,20 @@ export default {
         this.getWeatherDataFromAPI({
           type: "url",
           data: this.getPreviousQuery,
+        });
+      } else {
+        console.log("error: no query saved");
+      }
+    },
+
+    refreshWeatherNewUnits() {
+      if (this.getPreviousQuery !== "") {
+        let editedQuery = this.getPreviousQuery.includes("imperial")
+          ? this.getPreviousQuery.replace("imperial", "metric")
+          : this.getPreviousQuery.replace("metric", "imperial");
+        this.getWeatherDataFromAPI({
+          type: "url",
+          data: editedQuery,
         });
       } else {
         console.log("error: no query saved");
