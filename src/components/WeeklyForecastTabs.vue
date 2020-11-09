@@ -17,22 +17,24 @@
         }}{{ this.getWeatherUnits.temp }}
       </div>
     </div>
-    <div class="container content-shown" v-if="!collapsed">
-      <div class="dropdown-temp">High / Low:</div>
-      <div class="dropdown-temp-high">
-        {{ Math.round(Number(forecastedDay.temp_high))
-        }}{{ this.getWeatherUnits.temp }}
+    <transition name="open" mode="out-in">
+      <div class="container content-shown" v-if="!collapsed">
+        <div class="dropdown-temp">High / Low:</div>
+        <div class="dropdown-temp-high">
+          {{ Math.round(Number(forecastedDay.temp_high))
+          }}{{ this.getWeatherUnits.temp }}
+        </div>
+        <div class="dropdown-temp-low">
+          {{ Math.round(Number(forecastedDay.temp_low))
+          }}{{ this.getWeatherUnits.temp }}
+        </div>
+        <div class="humidity">Humidity: {{ forecastedDay.humidity }}%</div>
+        <div class="description">{{ forecastedDay.description }}.</div>
+        <div class="wind">
+          Wind: {{ forecastedDay.wind }}{{ this.getWeatherUnits.wind }}
+        </div>
       </div>
-      <div class="dropdown-temp-low">
-        {{ Math.round(Number(forecastedDay.temp_low))
-        }}{{ this.getWeatherUnits.temp }}
-      </div>
-      <div class="humidity">Humidity: {{ forecastedDay.humidity }}%</div>
-      <div class="description">{{ forecastedDay.description }}.</div>
-      <div class="wind">Wind: 
-        {{ forecastedDay.wind }}{{ this.getWeatherUnits.wind }}
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 <script>
@@ -91,7 +93,7 @@ export default {
   grid: [row] 1fr / repeat(3, [col] 1fr);
   cursor: pointer;
   border-width: 1px;
-    -moz-user-select: none;
+  -moz-user-select: none;
   -webkit-user-select: none;
 }
 
@@ -142,5 +144,17 @@ export default {
 
 .wind {
   justify-self: start;
+}
+
+.open-enter, .open-leave-to {
+  opacity: 0;
+}
+
+.open-enter-to {
+  opacity: 1;
+}
+
+.open-enter-active, .open-leave-active {
+  transition: all 0.3s ease-in-out;
 }
 </style>
