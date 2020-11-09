@@ -4,7 +4,7 @@
       <p>{{ errorMessage }}</p>
     </div>
     <div class="search-bar">
-      <a class="github-logo" href="https://github.com/ellielle"><img src="../assets/images/github32x.png" alt="Github"></a>
+      <a class="github-logo" href="https://github.com/ellielle"><img src="../../public/github32x.png" alt="Github"></a>
       <svg
         class="get-location-image"
         xmlns="http://www.w3.org/2000/svg"
