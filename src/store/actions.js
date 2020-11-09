@@ -6,7 +6,7 @@ export default {
     commit("SET_WEATHER_DATA", weatherData);
   },
   setWeeklyForecast({ commit }, weeklyForecastData) {
-    commit("SET_WEEKLY_FORECAST", {});
+    commit("SET_WEEKLY_FORECAST", null);
     commit("SET_WEEKLY_FORECAST", weeklyForecastData);
   },
   setDailyForecast({ commit }, dailyForecastData) {
@@ -36,5 +36,8 @@ export default {
   },
   setCurrentCity({commit}, currentCity) {
     commit("SET_CURRENT_CITY", currentCity);
+  },
+  setCurrentSearchCoordinates({commit}, currentCoordinates) {
+    commit("SET_CURRENT_SEARCH_COORDS", currentCoordinates);
   }
 };

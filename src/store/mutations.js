@@ -9,6 +9,7 @@ import {
   SET_USER_UNITS,
   SET_CURRENT_DATETIME,
   SET_CURRENT_CITY,
+  SET_CURRENT_SEARCH_COORDS
 } from "./mutation-types";
 
 export default {
@@ -42,5 +43,8 @@ export default {
   },
   [SET_CURRENT_CITY](state, currentCity) {
     state.currentCity = currentCity;
+  },
+  [SET_CURRENT_SEARCH_COORDS](state, currentCoordinates) {
+    state.currentSearchCoordinates = currentCoordinates;
   }
 };

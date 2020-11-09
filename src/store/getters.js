@@ -40,5 +40,8 @@ export default {
   },
   getCurrentCity(state) {
     return state.currentCity;
+  },
+  getCurrentSearchCoordinates(state) {
+    return state.currentSearchCoordinates;
   }
 };

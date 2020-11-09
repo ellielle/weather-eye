@@ -4,6 +4,7 @@ export default {
   locationIQAPIEndpoint: "https://us1.locationiq.com/v1/reverse.php",
   previousQuery: "",
   userCoordinates: { lat: null, lon: null },
+  currentSearchCoordinates: { lat: null, lon: null },
   userOptions: { units: null },
   weatherData: {},
   currentWeather: {},
@@ -24,5 +25,5 @@ export default {
   userWeatherUnits: {
     temp: "°F",
     wind: " mph",
-  }
+  },
 };
