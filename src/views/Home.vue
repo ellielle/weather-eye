@@ -17,6 +17,7 @@
           d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm-1.56 10H9v-1.44l3.35-3.34 1.43 1.43L10.44 12zm4.45-4.45l-.7.7-1.44-1.44.7-.7c.15-.15.39-.15.54 0l.9.9c.15.15.15.39 0 .54z"
         />
       </svg>
+
       <svg
         class="search-location-image"
         xmlns="http://www.w3.org/2000/svg"
@@ -55,29 +56,46 @@
         <span>Refresh</span>
       </button>
     </div>
-    <button v-if="!isUserLocationSet">TODO NO LOCATION BUTTON</button>
-    <div
-      class="container-components"
-      :style="
-        weeklyForecastAvailable ? weatherStyles.weekly : weatherStyles.noWeekly
-      "
-    >
-      <current-weather
-        class="current-weather"
-        v-if="currentWeatherAvailable"
-        :current-weather="getCurrentWeatherData"
-      ></current-weather>
-      <daily-forecast
-        class="daily-forecast"
-        v-if="dailyForecastAvailable"
-        :forecast="getDailyForecastData"
-      ></daily-forecast>
-      <weekly-forecast
-        class="weekly-forecast"
-        v-if="weeklyForecastAvailable"
-        :weekly-forecast="getWeeklyForecastData"
-        :key="getWeeklyForecastData[0].temp_high"
-      ></weekly-forecast>
+    <div v-if="storageAvailable">
+      <div
+        class="container-components"
+        :style="
+          weeklyForecastAvailable
+            ? weatherStyles.weekly
+            : weatherStyles.noWeekly
+        "
+      >
+        <transition name="slide-in-left" mode="out-in">
+          <current-weather
+            class="current-weather"
+            v-if="currentWeatherAvailable"
+            :current-weather="getCurrentWeatherData"
+          ></current-weather>
+        </transition>
+        <transition name="slide-in-left" mode="out-in">
+          <daily-forecast
+            class="daily-forecast"
+            v-if="dailyForecastAvailable"
+            :forecast="getDailyForecastData"
+          ></daily-forecast>
+        </transition>
+        <transition name="slide-in-right" mode="out-in">
+          <weekly-forecast
+            class="weekly-forecast"
+            v-if="weeklyForecastAvailable"
+            :weekly-forecast="getWeeklyForecastData"
+            :key="getWeeklyForecastData[0].temp_high"
+          ></weekly-forecast>
+        </transition>
+        <transition name="fade" mode="out-in">
+          <popup-component class="popup-component" v-if="popupMessage !== ''">
+            {{ popupMessage }}
+          </popup-component>
+        </transition>
+      </div>
+    </div>
+    <div v-else>
+      <p class="no-storage">This website doesn't support your browser. You should feel bad.</p>
     </div>
   </div>
 </template>
@@ -86,6 +104,7 @@
 import CurrentWeather from "./CurrentWeather";
 import WeeklyForecast from "./WeeklyForecast";
 import DailyForecast from "./DailyForecast";
+import PopupComponent from "../components/PopupComponent";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Home",
@@ -94,28 +113,18 @@ export default {
     CurrentWeather,
     WeeklyForecast,
     DailyForecast,
+    PopupComponent,
   },
 
-  // TODO ? refactor refresh to force a position-based query?
-
-  // TODO change location icon to get location button, a different button icon for its current functionality
-  // ! have tooltip popup on location data save
-
-  // TODO throw up error message if query comes back invalid
-
-  // TODO animations / transitions (current and daily should slide in from left, weekly from right)
-  // TODO animation for location button
-
-  // TODO add page blocking access if localStorage isn't available
-  // ? have a landing page letting user know why is blank?
-
-  // ! tooltip popover thing saying nothing to refresh in refreshWeather()
+  // TODO footer
 
   data() {
     return {
       userInput: "",
+      storageAvailable: false,
       geoDataAvailable: false,
-      errorMessage: "",
+      popupMessage: "",
+      errorMessage: null,
       searchType: "",
       weatherStyles: {
         weekly:
@@ -138,6 +147,7 @@ export default {
       "getWeeklyForecastData",
       "getPreviousQuery",
       "getCurrentCity",
+      "getCurrentSearchCoordinates",
     ]),
     currentWeatherAvailable() {
       return Object.keys(this.getCurrentWeatherData).length > 0;
@@ -189,11 +199,15 @@ export default {
       "setPreviousQuery",
       "setCurrentDateTime",
       "setCurrentCity",
+      "setCurrentSearchCoordinates",
     ]),
 
     async getWeatherDataFromAPI(args = { type: "coords" }) {
       let fullAPIURL = ``;
       switch (args.type) {
+        case "refresh":
+          fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getCurrentSearchCoordinates.lat}&lon=${this.getCurrentSearchCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
+          break;
         case "coords":
           fullAPIURL = `${this.getOpenWeatherAPIEndpoint}/onecall?lat=${this.getUserCoordinates.lat}&lon=${this.getUserCoordinates.lon}&appid=${process.env.VUE_APP_OPENWEATHER_API_KEY}&units=${this.getUserOptions.units}&exclude=minutely,hourly,alerts`;
           break;
@@ -209,7 +223,9 @@ export default {
       }
       // Ensures a type was sent, otherwise it falls back to the previous query's type
       this.searchType =
-        args.type !== "url" ? args.type : this.getPreviousSearchType();
+        args.type !== "url" && args.type !== "refresh"
+          ? args.type
+          : this.getPreviousSearchType();
       this.setPreviousQuery(fullAPIURL);
       try {
         console.log(fullAPIURL);
@@ -218,9 +234,10 @@ export default {
         this.setCurrentDateTime(this.getFormattedDateTime());
         this.setWeatherData(data);
         this.parseWeatherData();
+        this.setErrorMessage(null);
       } catch (error) {
         this.setWeatherData({});
-        this.setErrorMessage(error);
+        this.setErrorMessage("Invalid Query.");
         this.setPreviousQuery("");
       }
       this.searchType = "";
@@ -262,6 +279,8 @@ export default {
           type: "city&state",
           data: this.userInput,
         });
+      } else {
+        this.setErrorMessage("Invalid Search. Please use ZIP code or the City + Country Code. (ex. New York, US)");
       }
     },
 
@@ -306,6 +325,10 @@ export default {
             lon: this.getWeatherData.lon,
           },
         });
+        this.setCurrentSearchCoordinates({
+          lat: this.getWeatherData.lat,
+          lon: this.getWeatherData.lon,
+        });
       } else if (
         this.searchType === "zip" ||
         this.searchType === "city&state"
@@ -320,6 +343,10 @@ export default {
           wind: this.getWeatherData.wind.speed,
           icon: this.getIconURL(this.getWeatherData.weather[0].icon),
           coords: this.getWeatherData.coord,
+        });
+        this.setCurrentSearchCoordinates({
+          lat: this.getWeatherData.coord.lat,
+          lon: this.getWeatherData.coord.lon,
         });
       }
     },
@@ -378,9 +405,7 @@ export default {
     },
 
     setErrorMessage(message) {
-      // TODO
-      // ! remove logs
-      console.log("set error message");
+      this.errorMessage = message;
       if (!!message) {
         console.log(message);
       }
@@ -471,13 +496,19 @@ export default {
     },
 
     refreshWeather() {
-      if (this.getPreviousQuery !== "") {
+      if (
+        this.getCurrentSearchCoordinates.lat !== null &&
+        this.getCurrentSearchCoordinates.lon !== null
+      ) {
+        this.getWeatherDataFromAPI({ type: "refresh" });
+      } else if (this.getPreviousQuery !== "") {
         this.getWeatherDataFromAPI({
           type: "url",
           data: this.getPreviousQuery,
         });
+        this.showPopup("Weather Refreshed!");
       } else {
-        console.log("error: no query saved");
+        this.showPopup("No Location to Refresh!");
       }
     },
 
@@ -509,6 +540,7 @@ export default {
           })
         );
         localStorage.setItem("city", JSON.stringify(this.getCurrentCity));
+        this.showPopup("Location Saved!");
       } catch (error) {
         console.log(error);
       }
@@ -552,7 +584,27 @@ export default {
       return description.charAt(0).toUpperCase() + description.slice(1);
     },
 
-    getWeatherForSavedLocation() {},
+    getWeatherForSavedLocation() {
+      this.getWeatherDataFromAPI({ type: "coords" });
+    },
+
+    showPopup(message) {
+      this.popupMessage = message;
+      setTimeout(() => {
+        this.popupMessage = "";
+      }, 3000);
+    },
+
+    localStorageAvailable() {
+      try {
+        let test = "TESTING";
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    },
   },
 
   mounted() {
@@ -560,6 +612,7 @@ export default {
     this.setSelectedOption(this.getUserOptions.units);
     this.getLocationWeather();
     this.focusSearchBar();
+    this.storageAvailable = this.localStorageAvailable();
   },
 };
 </script>
@@ -583,7 +636,15 @@ input[type="text"] {
   color: var(--text-color-primary);
 }
 
+.no-storage {
+  color: orangered;
+}
+
 // Component grid
+
+.error-display {
+  color: orangered;
+}
 
 .container-components {
   padding-top: 5px;
@@ -610,6 +671,12 @@ input[type="text"] {
 
 .weekly-forecast {
   grid-area: 1 / 4 / 4 / 5;
+}
+
+.popup-component {
+  position: absolute;
+  bottom: 75px;
+  right: 75px;
 }
 
 // Search Bar
@@ -784,5 +851,61 @@ input[type="text"] {
   100% {
     color: white;
   }
+}
+
+// Vuejs animations
+.slide-in-left-enter-active,
+.slide-in-right-enter-active,
+.slide-in-left-leave-active,
+.slide-in-right-leave-active {
+  transition: all 0.5s ease-in-out;
+}
+
+.fade-enter-active {
+  transition: all 0.35s ease-in-out;
+}
+
+.fade-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.slide-in-left-enter,
+.slide-in-right-enter,
+.fade-enter {
+  opacity: 0;
+}
+
+.slide-in-left-enter-to,
+.slide-in-right-enter-to,
+.fade-enter-to {
+  opacity: 1;
+}
+
+.slide-in-left-enter {
+  transform: translateX(-200px);
+}
+
+.slide-in-left-enter-to {
+  transform: translateX(0);
+}
+
+.slide-in-right-enter {
+  transform: translateX(200px);
+}
+
+.slide-in-right-enter-to {
+  transform: translateX(0);
+}
+
+.slide-in-left-leave-to {
+  transform: translateX(-200px);
+}
+
+.slide-in-right-leave-to {
+  transform: translateX(200px);
+}
+
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
