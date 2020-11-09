@@ -31,7 +31,6 @@ body {
   color: #2c3e50;
   min-height: 100vh;
   background-image: var(--background-crosshatch);
-  padding: 30px 0 0 0;
   a {
     font-weight: bold;
     color: #2c3e50;

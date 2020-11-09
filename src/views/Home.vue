@@ -4,6 +4,7 @@
       <p>{{ errorMessage }}</p>
     </div>
     <div class="search-bar">
+      <a class="github-logo" href="https://github.com/ellielle"><img src="../assets/images/github32x.png" alt="Github"></a>
       <svg
         class="get-location-image"
         xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +96,9 @@
       </div>
     </div>
     <div v-else>
-      <p class="no-storage">This website doesn't support your browser. You should feel bad.</p>
+      <p class="no-storage">
+        This website doesn't support your browser. You should feel bad.
+      </p>
     </div>
   </div>
 </template>
@@ -115,8 +118,6 @@ export default {
     DailyForecast,
     PopupComponent,
   },
-
-  // TODO footer
 
   data() {
     return {
@@ -280,7 +281,9 @@ export default {
           data: this.userInput,
         });
       } else {
-        this.setErrorMessage("Invalid Search. Please use ZIP code or the City + Country Code. (ex. New York, US)");
+        this.setErrorMessage(
+          "Invalid Search. Please use ZIP code or the City + Country Code. (ex. New York, US)"
+        );
       }
     },
 
@@ -634,6 +637,7 @@ input[type="text"] {
 
 .container-main {
   color: var(--text-color-primary);
+  padding-top: 30px;
 }
 
 .no-storage {
@@ -702,6 +706,20 @@ input[type="text"] {
 .search-location-image {
   grid-area: row / col 2 / row / col 3;
   justify-self: end;
+}
+
+.search-bar a {
+  width: fit-content;
+  padding-top: 2px;
+  align-self: center;
+  margin-left: 5px;
+}
+
+.search-bar a img {
+  grid-area: row / col / row / col;
+  height: 24px;
+  width: 24px;
+  opacity: 65%;
 }
 
 .search-bar {
