@@ -7,9 +7,9 @@ I first started the project with Vuejs 3 to take advantage of the improvements i
 This project also uses: 
 - OpenWeatherMap
 - LocationIQ - reverse geocode API to get locations
-<br>
-![Demo Image](../assets/demo.png?raw=true)
-<br>
+#
+![Demo](../assets/demo.png?raw=true)
+#
 With the information returned from OpenWeatherMap varying based on the data being used for the query, I decided to not force the user to provide location data access. Using the search bar will return daily weather, and a refresh of the location (or saving it as your default location) will return an extended forecast. This is due to what data the API exposes to ZIP and city name queries. Only geolocation-based queries return a full forecast.
 
 I felt requiring interaction for a 2nd query, instead of querying repeatedly to get initial data with coordinates and then repeating the query with geolocation data, was a better choice, if not less intuitive to interact with. Free API key limits and all.
