@@ -11,6 +11,8 @@
         viewBox="0 0 24 24"
         width="29"
         @click="saveCurrentLocation"
+        @mouseover.self="showTooltip($event, 'Save as default location')"
+        @mouseleave="removeTooltip"
       >
         <path d="M0 0h24v24H0z" fill="none" />
         <path
@@ -25,6 +27,10 @@
         viewBox="0 0 24 24"
         width="29"
         @click="getWeatherForSavedLocation"
+        @mouseover.self="
+          showTooltip($event, 'Get weather for default location')
+        "
+        @mouseleave="removeTooltip"
       >
         <path d="M0 0h24v24H0z" fill="none" />
         <path
@@ -52,7 +58,12 @@
           >Imperial: °F</span
         >
       </div>
-      <button class="btn-refresh" @click="refreshWeather">
+      <button
+        class="btn-refresh"
+        @click="refreshWeather"
+        @mouseover="showTooltip($event, 'Refresh weather')"
+        @mouseleave="removeTooltip"
+      >
         <span>Refresh</span>
       </button>
     </div>
@@ -99,6 +110,11 @@
         This website doesn't support your browser. You should feel bad.
       </p>
     </div>
+    <transition name="fade" mode="in-out">
+      <app-tooltip class="app-tooltip">
+        {{ tooltipMessage }}
+      </app-tooltip>
+    </transition>
   </div>
 </template>
 
@@ -107,6 +123,7 @@ import CurrentWeather from "./CurrentWeather";
 import WeeklyForecast from "./WeeklyForecast";
 import DailyForecast from "./DailyForecast";
 import PopupComponent from "../components/PopupComponent";
+import Tooltip from "../components/Tooltip";
 import { mapGetters, mapActions } from "vuex";
 export default {
   name: "Home",
@@ -116,11 +133,13 @@ export default {
     WeeklyForecast,
     DailyForecast,
     PopupComponent,
+    appTooltip: Tooltip,
   },
 
   data() {
     return {
       userInput: "",
+      tooltipMessage: null,
       storageAvailable: false,
       geoDataAvailable: false,
       popupMessage: "",
@@ -228,7 +247,6 @@ export default {
           : this.getPreviousSearchType();
       this.setPreviousQuery(fullAPIURL);
       try {
-        console.log(fullAPIURL);
         const response = await fetch(`${fullAPIURL}`, { mode: "cors" });
         const data = await response.json();
         this.setCurrentDateTime(this.getFormattedDateTime());
@@ -402,15 +420,11 @@ export default {
         // Remove current day's data
         weeklyForecast.shift();
         this.setWeeklyForecast(weeklyForecast);
-        console.log(weeklyForecast.length);
       }
     },
 
     setErrorMessage(message) {
       this.errorMessage = message;
-      if (!!message) {
-        console.log(message);
-      }
     },
 
     changeUnits(newUnit) {
@@ -523,8 +537,6 @@ export default {
           type: "url",
           data: editedQuery,
         });
-      } else {
-        console.log("error: no query saved");
       }
     },
 
@@ -544,7 +556,7 @@ export default {
         localStorage.setItem("city", JSON.stringify(this.getCurrentCity));
         this.showPopup("Location Saved!");
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     },
 
@@ -607,6 +619,20 @@ export default {
         return false;
       }
     },
+
+    showTooltip(event, tooltipMessage) {
+      const tooltipWindow = document.querySelector(".app-tooltip");
+      this.tooltipMessage = tooltipMessage;
+      tooltipWindow.style.left = `${event.pageX + 10}px`;
+      tooltipWindow.style.top = `${event.pageY + 20}px`;
+    },
+
+    removeTooltip() {
+      const tooltipWindow = document.querySelector(".app-tooltip");
+      this.tooltipMessage = null;
+      tooltipWindow.style.left = "-300px";
+      tooltipWindow.style.top = "-300px";
+    },
   },
 
   mounted() {
@@ -641,6 +667,10 @@ input[type="text"] {
 
 .no-storage {
   color: orangered;
+}
+
+.app-tooltip {
+  transition: opacity 0.3s ease;
 }
 
 // Component grid
