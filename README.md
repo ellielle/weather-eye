@@ -8,12 +8,7 @@ This project also uses:
 - OpenWeatherMap
 - LocationIQ - reverse geocode API to get locations
 <br>
-<br>
-<details>
-<summary>7 day forecast with current weather</summary>
-![Demo Image](../assets/demo.png)
-</details>
-<br>
+![Demo Image](../assets/demo.png?raw=true)
 <br>
 With the information returned from OpenWeatherMap varying based on the data being used for the query, I decided to not force the user to provide location data access. Using the search bar will return daily weather, and a refresh of the location (or saving it as your default location) will return an extended forecast. This is due to what data the API exposes to ZIP and city name queries. Only geolocation-based queries return a full forecast.
 
